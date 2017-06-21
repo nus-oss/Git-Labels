@@ -1,0 +1,91 @@
+{
+  "manifest_version": 2,
+
+  "name": "Git Flash",
+  "description": "Manage Github labels effectively",
+  "version": "1.0",
+
+  "browser_action": {
+    "default_icon": "resources/icon.png",
+    "default_popup": "src/popup/popup.html"
+  },
+
+  "permissions": ["tabs",
+                  "https://github.com/*", 
+                  "http://github.com/*"],
+
+  "background": {
+    "scripts": [ "src/background-scripts/backgroundscript.js" ],
+    "persistent": false
+  },
+
+  "content_scripts": [
+   {
+      "matches": ["https://github.com/*", 
+                  "http://github.com/*" ],
+
+      "css": ["libs/semantic/semantic.offline.css",
+              "libs/colorpicker/spectrum.min.css",
+              "src/styles/colorpicker.css",
+              "src/styles/labelui.css" ],
+
+      "js": [ // Libaries used
+              "libs/jquery/jquery-3.2.1.min.js",
+              "libs/semantic/semantic.js",
+              "libs/colorpicker/spectrum.min.js",
+              "libs/pubsubjs/pubsub.js",
+
+              // Utility and constants used throughout the extensions
+              "src/globals/constants.js",
+              "src/uuid-generator/bytesToUuid.js",
+              "src/uuid-generator/sha1-browser.js",
+              "src/uuid-generator/v5.js",
+              "src/uuid-generator/idgenerator.js",
+              "src/uuid-generator/instanceidgenerator.js",
+              
+              // Essential Structures 
+              "src/label-structures/labelitem.js",
+              "src/label-structures/groupinfo.js",
+              "src/label-structures/itemstorage.js",
+              "src/sidebar/labelgroup.js",
+              "src/sidebar/labelgroupsfactory.js",
+              "src/sidebar/selectedlabelsfactory.js",
+              "src/sidebar/searchfactory.js",
+              "src/sidebar/sidebarfactory.js",
+              "src/sidebar/launchbuttonfactory.js",
+              "src/sidebar/layoutmanager.js",
+              "src/sidebar/fuzzysearchmodule.js",
+
+              // Page Controllers
+              "src/page-controllers/existingissuepagecontroller.js",
+              "src/page-controllers/newissuepagecontroller.js",
+              "src/page-controllers/issuepagecontroller.js",
+              "src/page-controllers/labelpagecontroller.js",
+
+              // Page Delegator
+              "src/page-controllers/pagecontroldelegator.js" ],
+
+      "run_at": "document_end"
+    }
+  ],
+
+  "web_accessible_resources": ["libs/semantic/resources/no_9lQ_y.ttf",
+                               "libs/semantic/resources/epeqaMzL.woff",
+                               "libs/semantic/resources/z3Aqomh.ttf",
+                               "libs/semantic/resources/L3zGz4ZC.woff",
+                               "libs/semantic/resources/X7Xnr2O0.ttf",
+                               "libs/semantic/resources/ziC14O2D.ttf",
+                               "libs/semantic/resources/MrmARulE.woff",
+                               "libs/semantic/resources/PAZqeYIZ.ttf",
+                               "libs/semantic/resources/x2sgpHzo.woff",
+                               "libs/semantic/resources/jgudjguj.png",
+                               "libs/semantic/resources/wierwurie.png",
+                               "libs/semantic/themes/default/assets/images/flags.png",
+                               "libs/semantic/themes/default/assets/fonts/icons.eot", 
+                               "libs/semantic/themes/default/assets/fonts/icons.eot?#iefix", 
+                               "libs/semantic/themes/default/assets/fonts/icons.svg#icons",
+                               "libs/semantic/themes/default/assets/fonts/icons.ttf",
+                               "libs/semantic/themes/default/assets/fonts/icons.woff",
+                               "libs/semantic/themes/default/assets/fonts/icons.woff2"
+  ]
+}

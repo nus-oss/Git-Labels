@@ -1,0 +1,195 @@
+/* Main Site Content */
+body, .pusher {
+	margin: 0;
+	padding: 0;
+}
+
+/* Sidebar */
+.ui.sidebar {
+	z-index: 11;
+	background-color: #363B46!important;
+}
+
+/* Side button to open sidebar */
+.launch-container{
+	z-index: 10;  
+	position: fixed;
+    top: 20%;
+    right: 0px;
+}
+.launch.button {
+	position: absolute;
+}
+.launch.button .icon {
+    padding-left: 15%;
+}
+
+/* Header */
+.tag-container-header {
+	margin-top: 0.5em!important;
+	margin-bottom: 0.5em!important;
+	background-color: transparent!important;
+}
+.tag-container-header .icon {
+	color: #FFFFFF;
+}
+.tag-container-header .content {
+	color: #FFFFFF;
+}
+.tag-container-header.divider.header:after, .tag-container-header.divider.header:before {
+	background-image: none;
+}
+
+/* Labels in general */
+.custom-label {
+	margin-top: 0.4em!important;
+	margin-bottom: 0.4em!important;
+	background-color: #FFFFFF!important;
+	font-weight: normal!important;
+}
+.custom-label:hover {
+	background-color: #363B46!important;
+	cursor: pointer;
+}
+.custom-label:hover .label-content {
+	color: #FFFFFF!important;
+}
+.custom-label .label-content {
+	color: black!important;
+}
+.custom-label.removed .label-content {
+	text-decoration: line-through #ff6d6d!important;
+}
+
+/* Text/Tag Container */
+.droptaglistcontainer {
+	width: auto;
+	margin: 2%;
+	background: none!important;
+}
+.droptaglist {
+	width: auto;
+	margin-bottom: 0px;
+	background: none!important;
+	display: visible!important;
+}
+.tag-container {
+	display:inline-block;
+	width: 100%;
+}
+
+/* Raised Segments Container */
+.ui.raised.segment{
+	background-color: #222222!important;
+	padding: 0.5rem!important;
+	margin-top: 0.30rem!important;
+	margin-bottom: 0.30rem!important;
+}
+
+/* Input Field */
+.droptaglistcontainer .search-container.ui.raised.segment{
+	border: none;
+	box-shadow: none;
+}
+.search-container {
+	display:inline-block;
+	width: 100%;
+}
+.search-container .search-icon {
+	float: left;
+	color: white;
+}
+.search-container span.search-field {
+	display: block;
+	overflow: hidden;
+}
+.search-container .clear-search-icon {
+	float: right;
+	color: white;
+	cursor: pointer;
+}
+.search-container .clear-search-icon:hover {
+	color: #d11250;
+}
+.search-container input[type=text].find {
+  color: white;
+  border: none;
+  border-bottom: white solid 1px;
+  background: none;
+  outline: 0;
+}
+.search-container input[type=text].find:focus {
+  border: none;
+  border-bottom: #6dffff solid 1px;
+  background: none;
+  outline: 0;
+}
+.search-container input[type=text].find.no-match:focus {
+  border: none;
+  border-bottom: red solid 1px;
+  background: none;
+  outline: 0;
+}
+.search-container .find {
+  width:100%;
+  font-size: 1.3em;
+  padding-bottom: 2px;
+  margin-left: 0.25em;
+  margin-right: 0.25em;
+}
+
+/* Search Menu */
+.custom-list-menu-container {
+	position:relative;
+}
+.custom-list-menu {
+	background-color: #FFFFFF;
+	width: 100%;
+	position:absolute;
+	z-index: 1000;
+}
+.custom-list-menu div.item {
+	padding: 8px 13px 8px 13px!important;
+	border-top: 1px solid rgba(34,36,38,.15)!important;
+	cursor: default!important;
+	background-color: #FFFFFF!important;
+}
+.custom-list-menu div.item.selected {
+	background-color: #EEEEEE!important;
+}
+.custom-list-menu div.item div.list-content {
+	font-size: 15px!important;
+	font-family: Lato,'Helvetica Neue',Arial,Helvetica,sans-serif!important;
+	color: black!important;
+}
+.custom-list-menu div.item.selected div.list-content {
+	color: #006899!important;
+}
+.custom-list-menu div.item .icon {
+	margin-right: 5px!important;
+	color: black;
+	float: left!important;
+	vertical-align: middle!important;
+}
+
+/* Group Container holding unselected labels */
+.group-container .content {
+	color: white;
+	font-size: 110%; 
+	font-weight: bold;
+	vertical-align: middle;
+	margin-right: 0.1em;
+}
+.collapsed-group-container .content{
+	color: white;
+	font-size: 110%; 
+	font-weight: bold;
+	vertical-align: middle;
+	margin-right: 0.1em;
+}
+.group-container .caret.up.icon, .collapsed-group-container .caret.down.icon {
+	color: white;
+}
+.group-container .caret.up.icon:hover, .collapsed-group-container .caret.down.icon:hover {
+	cursor: pointer;
+}
