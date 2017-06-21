@@ -1,8 +1,3 @@
-var LocationNameString = {
-    labels: "/<user-name>/<repo-name>/labels/index",
-    issues: "/<user-name>/<repo-name>/issues/new"
-};
-
 var GroupType = {
     Dot: 0,
     Dash: 1,
@@ -14,11 +9,6 @@ var MouseButtonType = {
     Left: 1,
     Middle: 2,
     Right: 3
-}
-
-var CleanUpActionClassNames = {
-    RemovePushableFromBody: "git-flash-clear-body-pushable-action",
-    RemoveElement: "git-flash-remove-element-action"
 }
 
 /*

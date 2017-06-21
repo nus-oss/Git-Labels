@@ -22,6 +22,30 @@ ExistingIssuePageController.prototype.getDataForPOSTRequest = function() {
         return null;
     }
 
+    var utf8TokenElement = formElement.querySelector("input[name='utf8']");
+
+    if(!utf8TokenElement){
+        return null;
+    }
+
+    var utf8Token = utf8TokenElement.getAttribute("value");
+
+    if(typeof(utf8Token) !== "string"){
+        return null;
+    }
+
+    var postMethodElement = formElement.querySelector("input[name='_method']");
+
+    if(!postMethodElement){
+        return null;
+    }
+
+    var postMethod = postMethodElement.getAttribute("value");
+
+    if(typeof(postMethod) !== "string"){
+        return null;
+    }
+
     var tokenElement = formElement.querySelector("input[name='authenticity_token']");
 
     if(!tokenElement){
@@ -30,11 +54,11 @@ ExistingIssuePageController.prototype.getDataForPOSTRequest = function() {
 
     var token = tokenElement.getAttribute("value");
 
-    if(!token){
+    if(typeof(token) !== "string"){
         return null;
     }
 
-    return { url: url, token: token };
+    return { url: url, utf8Token: utf8Token, postMethod: postMethod ,token: token };
 }
 
 ExistingIssuePageController.prototype.handleExternalApplyLabelsEvent = function() {
@@ -49,7 +73,8 @@ ExistingIssuePageController.prototype.handleExternalApplyLabelsEvent = function(
         return false;
     }
 
-    var data = "utf8=%E2%9C%93&_method=put&authenticity_token=" + encodeURIComponent(postInfo.token);
+    var data = "utf8=" + encodeURIComponent(postInfo.utf8Token) + "&_method=" + encodeURIComponent(postInfo.postMethod);
+    data += ("&authenticity_token=" + encodeURIComponent(postInfo.token));
     data += ("&" + encodeURIComponent("issue[labels][]") + "=");
 
     var selectedItemIDsIter = this.storage.getSelectedItemIDsIterator();

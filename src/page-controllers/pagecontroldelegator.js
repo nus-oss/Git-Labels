@@ -2,7 +2,6 @@ var PageControlDelegator = function() {
 
     this.issuePageController = new IssuePageController();
     this.labelPageController = new LabelPageController();
-    //this.existingIssuePageController = new ExistingIssuePageController();
 
     this.AnalyticsContentForNewIssue = "/<user-name>/<repo-name>/issues/new";
     this.AnalyticsContentForExistingIssue = "/<user-name>/<repo-name>/issues/show";
@@ -10,18 +9,6 @@ var PageControlDelegator = function() {
 }
 
 PageControlDelegator.prototype.cleanup = function() {
-
-    /*
-    var elements = document.getElementById(CleanUpActionClassNames.RemovePushableFromBody);
-    if(elements){
-        document.body.classList.remove("pushable");
-    }
-
-    elements = document.getElementsByClassName(CleanUpActionClassNames.RemoveElement);
-    for (var i = elements.length; i--; ) {
-        elements[i].remove();
-    }*/
-
     this.issuePageController.cleanup();
 }
 
