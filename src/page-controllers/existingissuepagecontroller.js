@@ -161,12 +161,12 @@ ExistingIssuePageController.prototype.getLabelsFromDOM = function() {
 
         var item = items[i];
 
-        var nameNode = item.querySelector(".select-menu-item-text .name");
+        var nameNode = item.querySelector(".select-menu-item-text .color-label");
         if(!nameNode){
             continue;
         }
 
-        var name = nameNode.textContent;
+        var name = nameNode.getAttribute("data-name");
         if(!name){
             continue;
         }

@@ -118,12 +118,12 @@ NewIssuePageController.prototype.getLabelsFromDOM = function() {
 
         let label = labels[i];
 
-        let nameNode = label.querySelector(".name");
+        let nameNode = label.querySelector(".color-label");
         if(!nameNode){
             continue;
         }
 
-        let itemName = nameNode.textContent;
+        let itemName = nameNode.getAttribute("data-name");;
         if(!itemName){
             continue;
         }
