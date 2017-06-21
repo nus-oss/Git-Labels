@@ -1,4 +1,5 @@
 var NewIssuePageController = function() {
+    this.GitLabelListQuery = ".sidebar-labels .select-menu-modal";
     this.GitLabelsPostDataQueryString = ".discussion-sidebar-item.sidebar-labels .js-issue-sidebar-form";
     this.GitLabelsReplaceElementQueryString = ".discussion-sidebar-item.sidebar-labels.js-discussion-sidebar-item";
     this.GitLabelsQueryString = ".sidebar-labels .select-menu-modal-holder .select-menu-list .select-menu-item";
@@ -144,10 +145,16 @@ NewIssuePageController.prototype.getLabelsFromDOM = function() {
     return storage;
 }
 
+NewIssuePageController.prototype.hasPermissionToManageLabels = function() {
+    return document.body.querySelector(this.GitLabelListQuery) != null;
+}
+
 NewIssuePageController.prototype.run = function(layoutManager) {
-    if(layoutManager){
+    if(layoutManager && this.hasPermissionToManageLabels()){
         this.layoutManager = layoutManager;
         this.storage = this.getLabelsFromDOM();
-        this.layoutManager.initializeUI(this.storage);
+        if(this.storage){
+            this.layoutManager.initializeUI(this.storage);
+        }
     }
 }

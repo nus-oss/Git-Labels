@@ -1,4 +1,5 @@
 var ExistingIssuePageController = function(layoutManager) {
+    this.GitLabelListQuery = ".sidebar-labels .select-menu-modal";
     this.GitLabelListLocation = ".sidebar-labels .select-menu-modal-holder .js-select-menu-deferred-content";
     this.GitLabelListNewLocation = ".sidebar-labels .select-menu-modal-holder .js-select-menu-deferred-content .select-menu-list .select-menu-item";
      /*
@@ -168,8 +169,12 @@ ExistingIssuePageController.prototype.getLabelsFromDOM = function() {
     return storage;
 }
 
+ExistingIssuePageController.prototype.hasPermissionToManageLabels = function() {
+    return document.body.querySelector(this.GitLabelListQuery) != null;
+}
+
 ExistingIssuePageController.prototype.run = function(layoutManager) {
-    if(layoutManager){
+    if(layoutManager && this.hasPermissionToManageLabels()){
         this.layoutManager = layoutManager;
         this.storage = this.getLabelsFromDOM();
         if(!this.storage){
