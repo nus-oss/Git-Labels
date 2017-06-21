@@ -9,11 +9,6 @@ var FuzzySearchModule = function() {
     this.leading_letter_penalty = -3;        // penalty applied for every letter in str before the first match
     this.max_leading_letter_penalty = -9;    // maximum penalty for leading letters
     this.unmatched_letter_penalty = -1;      // penalty for every letter that doesn't matter
-
-    /*  Other variables present in this class|
-        -------------------------------------|
-        this.nameToHTMLMapping,
-    */
 }
 
 // Returns [bool, score, formattedStr]

@@ -97,13 +97,12 @@ ExistingIssuePageController.prototype.handleExternalApplyLabelsEvent = function(
     }
 
     $.post(postInfo.url, data)
-     .done()
-     .always(this.handleSuccessfulPostRequest.bind(this));
+     .always(this.handleAfterPostRequest.bind(this));
 
     return true;
 }
 
-ExistingIssuePageController.prototype.handleSuccessfulPostRequest = function() {
+ExistingIssuePageController.prototype.handleAfterPostRequest = function() {
     this.retrieveLabelsFromGETRequest();
 }
 
