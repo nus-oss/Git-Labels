@@ -31,6 +31,29 @@ SelectedLabelsFactory.prototype.subscribeToExternalEvents = function() {
                                                                 this.handleSearchToggleSelectEvent.bind(this));
 }
 
+SelectedLabelsFactory.prototype.addLabel = function(itemID) {
+
+    var item = this.storage.getItem(itemID);
+        
+    if(!item){
+        return false;
+    }
+    
+    var groupID = item.getGroupID();
+    var groupInfo = this.storage.getGroupDetails(groupID);
+
+    if(!groupInfo){
+        return false;
+    }
+
+    label = this.createLabelHTML(groupID, groupInfo, item);
+    if(!this.processLabel(label)){
+        return false;
+    }
+
+    return this.handleLabelSelection(label);
+}
+
 SelectedLabelsFactory.prototype.handleSearchToggleSelectEvent = function(msg, data) {
 
     if(!data){
@@ -46,27 +69,7 @@ SelectedLabelsFactory.prototype.handleSearchToggleSelectEvent = function(msg, da
     var label = this.selectedContainer.querySelector(".custom-label[data-item-id='"+itemID+"']");
 
     if(!label){
-
-        var item = this.storage.getItem(itemID);
-        
-        if(!item){
-            return false;
-        }
-        
-        var groupID = item.getGroupID();
-        var groupInfo = this.storage.getGroupDetails(groupID);
-
-        if(!groupInfo){
-            return false;
-        }
-
-        label = this.createLabelHTML(groupID, groupInfo, item);
-        if(!this.processLabel(label)){
-            return false;
-        }
-
-        return this.handleLabelSelection(label);
-
+        return this.addLabel(itemID);
     } else if(!this.isLabelSelected(label)) {
         return this.handleLabelSelection(label);
     } else {
@@ -114,24 +117,7 @@ SelectedLabelsFactory.prototype.handleExternalSelectLabelEvent = function(msg, d
     var label = this.selectedContainer.querySelector(".custom-label[data-item-id='"+itemID+"']");
 
     if(!label){
-
-        var item = this.storage.getItem(itemID);
-        if(!item){
-            return false;
-        }
-
-        var groupInfo = this.storage.getGroupDetails(groupID);
-
-        if(!groupInfo){
-            return false;
-        }
-
-        label = this.createLabelHTML(groupID, groupInfo, item);
-        if(!this.processLabel(label)){
-            return false;
-        }
-
-        return this.handleLabelSelection(label);
+        return this.addLabel(itemID);
     }
 
     return this.isLabelSelected(label) || this.handleLabelSelection(label);
