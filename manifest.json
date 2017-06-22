@@ -33,6 +33,7 @@
               "libs/jquery/jquery-3.2.1.min.js",
               "libs/semantic/semantic.js",
               "libs/colorpicker/spectrum.min.js",
+              "libs/scrollintoview/jquery.scrollintoview.mod.js",
               "libs/pubsubjs/pubsub.js",
 
               // Utility and constants used throughout the extensions

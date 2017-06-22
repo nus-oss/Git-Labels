@@ -30,6 +30,9 @@ var MouseButtonType = {
     User wants to permanently apply the labels selected:
       search-bar/apply-selected-labels AND params: {}
 
+    User wants to toggle the selection of the labels:
+      search/toggle-select-item AND params: {itemID}
+
     UI needs to be updated with new data
       side-bar-ui/update-data AND params: {instanceID}
 

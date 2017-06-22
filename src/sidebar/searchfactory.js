@@ -2,6 +2,7 @@ var SearchFactory = function() {
 
     this.search = new FuzzySearchModule();
     this.originalInput = "";
+    this.maxItems = 10;
 
     this.subscribeToExternalEvents();
 
@@ -14,13 +15,14 @@ var SearchFactory = function() {
         this.searchInput,
         this.searchMenuContainer,
         this.searchMenuList,
-        this.nameToIDMap
+        this.nameToIDMap,
+        this.sideBar
     */
 
     /*  Events Published
 
         PubSub.publish("search-bar/apply-selected-labels", {} );
-        PubSub.publish("search/select-item", {itemID: item.getID()});
+        PubSub.publish("search/toggle-select-item", {itemID: item.getID()});
     */
 
     /*  Internal Events
@@ -191,7 +193,7 @@ SearchFactory.prototype.handleSpaceKeyEvent = function() {
         return false;
     }
 
-    PubSub.publish("search/select-item", {itemID: item.getID()});
+    PubSub.publish("search/toggle-select-item", {itemID: item.getID()});
 
     this.searchInput.value = "";
     this.hideSearchlist(this.searchMenuList);
@@ -230,6 +232,10 @@ SearchFactory.prototype.setInputWithListItemContent = function(listItem) {
     return true;
 }
 
+SearchFactory.prototype.scrollIntoView = function( container, item ) {
+    $(item).scrollintoview({ duration: 10, direction: "y", parent: $(container) });
+}
+
 SearchFactory.prototype.handleUpArrowEvent = function() {
 
     if(!this.isSearchMenuListShown(this.searchMenuList)){
@@ -245,6 +251,7 @@ SearchFactory.prototype.handleUpArrowEvent = function() {
         }
         this.styleListItemAsSelected(lastItem);
         this.setInputWithListItemContent(lastItem);
+        this.scrollIntoView(this.searchMenuList, lastItem);
     } else {
 
         this.styleListItemAsUnselected(selectedItem);
@@ -253,6 +260,7 @@ SearchFactory.prototype.handleUpArrowEvent = function() {
         if(previousItem){
             this.styleListItemAsSelected(previousItem);
             this.setInputWithListItemContent(previousItem);
+            this.scrollIntoView(this.searchMenuList, previousItem);
         } else if(this.searchInput){
             this.searchInput.value = this.originalInput;
         } else {
@@ -279,6 +287,7 @@ SearchFactory.prototype.handleDownArrowEvent = function() {
         }
         this.styleListItemAsSelected(firstItem);
         this.setInputWithListItemContent(firstItem);
+        this.scrollIntoView(this.searchMenuList, firstItem);
     } else {
 
         this.styleListItemAsUnselected(selectedItem);
@@ -287,6 +296,7 @@ SearchFactory.prototype.handleDownArrowEvent = function() {
         if(nextItem){
             this.styleListItemAsSelected(nextItem);
             this.setInputWithListItemContent(nextItem);
+            this.scrollIntoView(this.searchMenuList, nextItem);
         } else if(this.searchInput){
             this.searchInput.value = this.originalInput;
         } else {
@@ -351,6 +361,17 @@ SearchFactory.prototype.handleInputChangeEvent = function() {
     return true;
 }
 
+SearchFactory.prototype.getSideBarHeight = function() {
+    if(!this.$sideBar) {
+        var sideBar = document.body.querySelector(".git-flash-labels-sidebar");
+        if(!sideBar){
+            return -1;
+        }
+        this.$sideBar = $(sideBar);
+    }
+    return this.$sideBar.height();
+}
+
 SearchFactory.prototype.populateSearchList = function(pattern) {
 
     if(!this.searchMenuList || typeof(pattern) !== "string"){
@@ -364,7 +385,8 @@ SearchFactory.prototype.populateSearchList = function(pattern) {
     }
 
     var resultsList = this.searchMenuList.cloneNode(false);
-    
+    resultsList.style.height = "auto";
+
     for(var i = 0, size = matchedList.length; i < size; ++i){
         var listItem = this.createListItem(matchedList[i]);
         resultsList.appendChild(listItem);
@@ -374,6 +396,14 @@ SearchFactory.prototype.populateSearchList = function(pattern) {
     this.searchMenuList = resultsList;
 
     this.attachListenersToSearchList(this.searchMenuList);
+
+    var sideBarMaxHeight = this.getSideBarHeight();
+    if(sideBarMaxHeight > 0){
+        var maxHeight = Math.ceil(0.6*sideBarMaxHeight);
+        if($(this.searchMenuList).height() > maxHeight){
+            this.searchMenuList.style.height = maxHeight + "px";
+        }
+    }
 
     return matchedList.length;
 }
@@ -396,11 +426,6 @@ SearchFactory.prototype.createMatchedList = function(pattern) {
         }
 
         var item = itemObj.value;
-
-        if(item.isSelected()){
-            continue;
-        }
-
         var result = this.search.fuzzyMatch(pattern, item.getFullName());
 
         if(!result){
@@ -411,7 +436,8 @@ SearchFactory.prototype.createMatchedList = function(pattern) {
             score: result.score,
             formattedStr: result.formattedStr,
             id: item.getID(),
-            color: item.getColor()
+            color: item.getColor(),
+            isSelected: item.isSelected()
         }
 
         list.push(itemInfo);
@@ -435,8 +461,11 @@ SearchFactory.prototype.searchListCompareFunc = function(a, b){
 SearchFactory.prototype.createListItem = function(itemInfo) {
 
      var item = document.createElement("div");
-     item.classList.add("item")
      item.setAttribute("data-item-id", itemInfo.id);
+     item.classList.add("item");
+     if(itemInfo.isSelected){
+         item.classList.add("taken");
+     }
 
      var itemColorIcon = document.createElement("i");
      itemColorIcon.classList.add("square", "icon");

@@ -15,7 +15,7 @@ var SelectedLabelsFactory = function() {
     /* Events handled
        PubSub.subscribe("group-label/unselect-item", this.handleExternalUnselectLabelEvent.bind(this));
        PubSub.subscribe("group-label/select-item", this.handleExternalSelectLabelEvent.bind(this));
-       PubSub.subscribe("search/select-item", this.handleSearchSelectEvent.bind(this));
+       PubSub.subscribe("search/toggle-select-item", this.handleSearchSelectEvent.bind(this));
     */
 }
 
@@ -27,11 +27,11 @@ SelectedLabelsFactory.prototype.subscribeToExternalEvents = function() {
     this.groupLabelSelectItemEventToken = PubSub.subscribe("group-label/select-item", 
                                                                 this.handleExternalSelectLabelEvent.bind(this));
 
-    this.searchLabelSelectItemEventToken = PubSub.subscribe("search/select-item", 
-                                                                this.handleSearchSelectEvent.bind(this));
+    this.searchLabelSelectItemEventToken = PubSub.subscribe("search/toggle-select-item", 
+                                                                this.handleSearchToggleSelectEvent.bind(this));
 }
 
-SelectedLabelsFactory.prototype.handleSearchSelectEvent = function(msg, data) {
+SelectedLabelsFactory.prototype.handleSearchToggleSelectEvent = function(msg, data) {
 
     if(!data){
         return false;
@@ -66,9 +66,12 @@ SelectedLabelsFactory.prototype.handleSearchSelectEvent = function(msg, data) {
         }
 
         return this.handleLabelSelection(label);
-    }
 
-    return this.isLabelSelected(label) || this.handleLabelSelection(label);
+    } else if(!this.isLabelSelected(label)) {
+        return this.handleLabelSelection(label);
+    } else {
+        return this.unselectLabel(label, true);
+    }
 }
 
 SelectedLabelsFactory.prototype.handleExternalUnselectLabelEvent = function(msg, data) {
