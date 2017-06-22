@@ -147,6 +147,8 @@ body, .pusher {
 	width: 100%;
 	position:absolute;
 	z-index: 1000;
+	word-wrap: break-word;
+	overflow-y: auto;
 }
 .custom-list-menu div.item {
 	padding: 8px 13px 8px 13px!important;
@@ -155,19 +157,18 @@ body, .pusher {
 	background-color: #FFFFFF!important;
 }
 .custom-list-menu div.item.selected {
-	background-color: #EEEEEE!important;
+	background-color: #e0e0e0!important;
 }
 .custom-list-menu div.item div.list-content {
 	font-size: 15px!important;
 	font-family: Lato,'Helvetica Neue',Arial,Helvetica,sans-serif!important;
-	color: black!important;
+	color: #3B3738!important;
 }
-.custom-list-menu div.item.selected div.list-content {
-	color: #006899!important;
+.custom-list-menu div.item.taken div.list-content {
+	color: #C63D0F!important;
 }
 .custom-list-menu div.item .icon {
 	margin-right: 5px!important;
-	color: black;
 	float: left!important;
 	vertical-align: middle!important;
 }
