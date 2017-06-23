@@ -139,7 +139,8 @@ LabelGroup.prototype.getCollapsedContainerStartingTextNode = function() {
 LabelGroup.prototype.createCollapsedContainer = function(isCacheDOM) {
 
     var outerCollapsedContainer = document.createElement("div");
-    outerCollapsedContainer.classList.add("collapsed-group-container", "ui", "raised", "segment");
+    outerCollapsedContainer.classList.add("collapsed-group-container", "ui", "raised", "segment", "transition",     
+                                            "hidden");
     outerCollapsedContainer.setAttribute("data-group-id", this.groupID);
     outerCollapsedContainer.setAttribute("data-group-type", this.groupInfo.getGroupType()+"");
 
@@ -331,7 +332,7 @@ LabelGroup.prototype.getExpandedContainerStartingTextNode = function() {
 LabelGroup.prototype.createExpandedContainer = function(isCacheDOM) {
 
     var outerExpandedContainer = document.createElement("div");
-    outerExpandedContainer.classList.add("group-container", "ui", "raised", "segment", "transition", "hidden");
+    outerExpandedContainer.classList.add("group-container", "ui", "raised", "segment");
     outerExpandedContainer.setAttribute("data-group-id", this.groupID);
     outerExpandedContainer.setAttribute("data-group-type", this.groupInfo.getGroupType()+"");
 
