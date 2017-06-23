@@ -1,10 +1,11 @@
 var ExistingIssuePageController = function(layoutManager) {
     this.GitLabelListQuery = ".sidebar-labels .select-menu-modal";
     this.GitLabelListLocation = ".sidebar-labels .select-menu-modal-holder .js-select-menu-deferred-content";
-    this.GitLabelListNewLocation = ".sidebar-labels .select-menu-modal-holder .js-select-menu-deferred-content .select-menu-list .select-menu-item";
+    this.GitLabelListItemLocation = ".sidebar-labels .select-menu-modal-holder .js-select-menu-deferred-content .select-menu-list .select-menu-item";
      /*
         this.storage,
-        this.layoutManager
+        this.layoutManager,
+        this.sideBarObserver
     */
 }
 
@@ -149,7 +150,7 @@ ExistingIssuePageController.prototype.retrieveLabelsFromGETRequest = function() 
 
 ExistingIssuePageController.prototype.getLabelsFromDOM = function() {
 
-    var items = document.body.querySelectorAll(this.GitLabelListNewLocation);
+    var items = document.body.querySelectorAll(this.GitLabelListItemLocation);
 
     if(items.length <= 0){
         return null;
@@ -200,6 +201,7 @@ ExistingIssuePageController.prototype.hasPermissionToManageLabels = function() {
 ExistingIssuePageController.prototype.run = function(layoutManager) {
     if(layoutManager && this.hasPermissionToManageLabels()){
         this.layoutManager = layoutManager;
+        this.setupGitDOMListeners();
         this.storage = this.getLabelsFromDOM();
         if(!this.storage){
             this.retrieveLabelsFromGETRequest();
@@ -207,4 +209,49 @@ ExistingIssuePageController.prototype.run = function(layoutManager) {
             this.layoutManager.initializeUI(this.storage);
         }
     }
+}
+
+ExistingIssuePageController.prototype.overrideLabelButtonListeners = function() {
+
+    var gitLabelButton = document.body.querySelector(".sidebar-labels .label-select-menu button.js-menu-target");
+
+    if(gitLabelButton){
+
+        gitLabelButton.classList.remove("js-menu-target");
+        gitLabelButton.addEventListener("click", function() {
+            if(this.layoutManager){
+                this.layoutManager.toggleSideBar();
+            }
+        }.bind(this), true);
+    }
+}
+
+ExistingIssuePageController.prototype.attachGitSideBarObserver = function() {
+
+    var gitSideBar = document.body.querySelector(".discussion-sidebar");
+
+    if(gitSideBar){
+
+        this.sideBarObserver = new MutationObserver(function(mutations) {
+            mutations.forEach(function(mutation) {
+                this.overrideLabelButtonListeners();
+            }.bind(this));    
+        }.bind(this));
+
+        var config = { childList: true };
+
+        this.sideBarObserver.observe(gitSideBar, config);
+    }
+}
+
+ExistingIssuePageController.prototype.cleanUp = function() {
+    if(this.sideBarObserver){
+        this.sideBarObserver.disconnect();
+        this.sideBarObserver = null;
+    }
+}
+
+ExistingIssuePageController.prototype.setupGitDOMListeners = function() {
+    this.overrideLabelButtonListeners();
+    this.attachGitSideBarObserver();
 }

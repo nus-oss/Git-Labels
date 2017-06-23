@@ -15,7 +15,7 @@ var SelectedLabelsFactory = function() {
     /* Events handled
        PubSub.subscribe("group-label/unselect-item", this.handleExternalUnselectLabelEvent.bind(this));
        PubSub.subscribe("group-label/select-item", this.handleExternalSelectLabelEvent.bind(this));
-       PubSub.subscribe("search/toggle-select-item", this.handleSearchSelectEvent.bind(this));
+       PubSub.subscribe("search/toggle-select-item", this.handleSearchToggleSelectEvent.bind(this));
     */
 }
 

@@ -141,6 +141,16 @@ LayoutManager.prototype.createSideBarWithContent = function( headerTitleText, in
     return sideBar;
 }
 
+LayoutManager.prototype.toggleSideBar = function() {
+    if(this.sideBar){
+        var $sideBar = $(this.sideBar);
+        if(!$sideBar.sidebar("is visible")){
+            PubSub.publish("side-bar-ui/visible", {});
+        }
+        $sideBar.sidebar("toggle");
+    }
+}
+
 LayoutManager.prototype.attachListenersToLaunchButton = function(launchButton, sideBar) {
     
     var $sideBar = $(sideBar);

@@ -31,6 +31,7 @@ IssuePageController.prototype.subscribeToExternalEvents = function() {
 }
 
 IssuePageController.prototype.cleanup = function() {
+    this.existingPageController.cleanUp();
     this.layoutManager.cleanup();
 }
 

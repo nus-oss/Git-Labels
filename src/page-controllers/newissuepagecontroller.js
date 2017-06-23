@@ -90,6 +90,8 @@ NewIssuePageController.prototype.handleSuccessfulPostRequest = function(data) {
 
     $(elementToBeReplaced).replaceWith($(data));
 
+    this.overrideLabelModalButtonListeners();
+
     return true;
 }
 
@@ -149,9 +151,26 @@ NewIssuePageController.prototype.hasPermissionToManageLabels = function() {
     return document.body.querySelector(this.GitLabelListQuery) != null;
 }
 
+NewIssuePageController.prototype.overrideLabelModalButtonListeners = function() {
+    var labelModalButton = document.body.querySelector(".sidebar-labels .label-select-menu button.js-menu-target");
+    if(labelModalButton){
+        labelModalButton.classList.remove("js-menu-target");
+        labelModalButton.addEventListener("click", function(e) {
+            if(this.layoutManager){
+                this.layoutManager.toggleSideBar();
+            }
+        }.bind(this), true);
+    }
+}
+
+NewIssuePageController.prototype.setupPageListeners = function() {
+    this.overrideLabelModalButtonListeners();
+}
+
 NewIssuePageController.prototype.run = function(layoutManager) {
     if(layoutManager && this.hasPermissionToManageLabels()){
         this.layoutManager = layoutManager;
+        this.setupPageListeners();
         this.storage = this.getLabelsFromDOM();
         if(this.storage){
             this.layoutManager.initializeUI(this.storage);
