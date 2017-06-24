@@ -25,7 +25,7 @@ Google Chrome 56.0.2924 or above with javascript enabled
 
 The full git repository is at: <https://github.com/jiajunGit/Git-Labels> Get it using the following command:
 
-        $ git clone git://github.com/jiajunGit/Git-Labels.git
+        $ git clone https://github.com/jiajunGit/Git-Labels.git
 
 ### Installation
 
@@ -74,7 +74,7 @@ The full git repository is at: <https://github.com/jiajunGit/Git-Labels> Get it 
 
 4. **Resolve conflicts among selected labels within non-exclusive groups**
 
-    Git Labels will prevent any conflicts due to selection of labels from non-exclusive groups. Only one label within a non-exclusive group should be selected at any one time for an issue and thus selection of more than one label from such a group will result in a conflict. In the example below, d.firstTimers and d.Contributors belong to the same group (i.e d dot group).
+    Git Labels will prevent any conflicts due to selection of labels from non-exclusive groups. Only one label within a non-exclusive group should be selected at any one time for an issue and thus selection of more than one label from such a group will result in a conflict. In the example below, d.FirstTimers and d.Contributors belong to the same group (i.e d dot group).
 
     ![selected-labels](readme-resources/images/selected-labels.png)
 
