@@ -86,15 +86,15 @@ The full git repository is at: <https://github.com/jiajunGit/Git-Labels> Get it 
 
 ## Built With
 
-jQuery - (["https://github.com/jquery/jquery"](https://github.com/jquery/jquery))
+jQuery - ([https://github.com/jquery/jquery](https://github.com/jquery/jquery))
 
-Semantic UI - (["https://github.com/semantic-org/semantic-ui/"](https://github.com/semantic-org/semantic-ui/))
+Semantic UI - ([https://github.com/semantic-org/semantic-ui/](https://github.com/semantic-org/semantic-ui/))
 
-PubSubJS - (["https://github.com/mroderick/PubSubJS"](https://github.com/mroderick/PubSubJS))
+PubSubJS - ([https://github.com/mroderick/PubSubJS](https://github.com/mroderick/PubSubJS))
 
-ScrollIntoView - (["https://github.com/litera/jquery-scrollintoview"](https://github.com/litera/jquery-scrollintoview))
+ScrollIntoView - ([https://github.com/litera/jquery-scrollintoview](https://github.com/litera/jquery-scrollintoview))
 
-Spectrum - (["https://github.com/bgrins/spectrum"](https://github.com/bgrins/spectrum))
+Spectrum - ([https://github.com/bgrins/spectrum](https://github.com/bgrins/spectrum))
 
 ## For Developers
 
