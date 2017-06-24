@@ -17,16 +17,13 @@ Google Chrome 56.0.2924 or above with javascript enabled
 
 ### Download
 
+#### Direct Link
+
 **[Click here to download latest version](https://github.com/jiajunGit/Git-Labels/archive/master.zip)**
 
 #### Code on Github
 
-You can also use the following links to access application specific downloads and git repositories:
-
-*   **Full Git Repository:**
-
-    The full git repository is at: <https://github.com/jiajunGit/Git-Labels>
-    Get it using the following command:
+The full git repository is at: <https://github.com/jiajunGit/Git-Labels> Get it using the following command:
 
         $ git clone git://github.com/jiajunGit/Git-Labels.git
 
@@ -53,3 +50,4 @@ You can also use the following links to access application specific downloads an
     Click on the "Load unpacked extension..." button and select the folder containing the project. Ensure that after loading the extension, your Google Chrome extension page has an entry for Git Labels as shown below:
 
     ![step three](readme-resources/images/installation-step-four.png)
+    
