@@ -49,5 +49,34 @@ The full git repository is at: <https://github.com/jiajunGit/Git-Labels> Get it 
 
     Click on the "Load unpacked extension..." button and select the folder containing the project. Ensure that after loading the extension, your Google Chrome extension page has an entry for Git Labels as shown below:
 
-    ![step three](readme-resources/images/installation-step-four.png)
+    ![step four](readme-resources/images/installation-step-four.png)
     
+## Features
+
+1. **Labels search**
+    
+    If you have many labels, Git Labels search will help you quickly find labels that you are looking for.
+
+2. **Organize grouped labels**
+
+    Labels are organized according to their groups (dot, dashed or non-grouped).
+
+3. **Resolve conflicts among selected labels within non-exclusive groups**
+
+    Git Labels will prevent any conflicts due to selection of labels from non-exclusive groups. Only one label within a non-exclusive group should be selected at any one time for an issue and thus selection of more than one label from such a group will result in a conflict.
+
+4. **Convenient label selection and unselection**
+
+    Selected labels are displayed above the search bar for easy reference. Furthermore, the selection status of labels can be toggled on or off by clicking on those labels.
+
+5. **Colorpicker**
+
+    Instead of a fixed color palette, Git labels offers its users a colorpicker for selecting colors for newly created labels.
+
+## Built With
+
+jQuery - (["https://github.com/jquery/jquery"](https://github.com/jquery/jquery))
+Semantic UI - (["https://github.com/semantic-org/semantic-ui/"](https://github.com/semantic-org/semantic-ui/))
+PubSubJS - (["https://github.com/mroderick/PubSubJS"](https://github.com/mroderick/PubSubJS))
+ScrollIntoView - (["https://github.com/litera/jquery-scrollintoview"](https://github.com/litera/jquery-scrollintoview))
+Spectrum - (["https://github.com/bgrins/spectrum"](https://github.com/bgrins/spectrum))
