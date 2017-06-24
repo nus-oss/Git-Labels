@@ -31,7 +31,7 @@ The full git repository is at: <https://github.com/jiajunGit/Git-Labels> Get it 
 
 1. **Download Git Labels**
 
-    Download a copy ([https://github.com/jiajunGit/Git-Labels/archive/master.zip](https://github.com/jiajunGit/Git-Labels/archive/master.zip)) of the project onto your local machine and unzip its contents. Ensure that the root structure of your folder is as shown below:
+    Download a [copy](#download) of the project onto your local machine and unzip its contents. Ensure that the root structure of your folder is as shown below:
 
     ![step one](readme-resources/images/installation-step-one.png)
 
