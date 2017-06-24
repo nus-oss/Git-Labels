@@ -57,26 +57,41 @@ The full git repository is at: <https://github.com/jiajunGit/Git-Labels> Get it 
     
     If you have many labels, Git Labels search will help you quickly find labels that you are looking for.
 
+    ![search](readme-resources/images/search.png)
+
 2. **Organize grouped labels**
 
     Labels are organized according to their groups (dot, dashed or non-grouped).
 
-3. **Resolve conflicts among selected labels within non-exclusive groups**
+    ![grouped-labels](readme-resources/images/grouped-labels.png)
 
-    Git Labels will prevent any conflicts due to selection of labels from non-exclusive groups. Only one label within a non-exclusive group should be selected at any one time for an issue and thus selection of more than one label from such a group will result in a conflict.
-
-4. **Convenient label selection and unselection**
+3. **Convenient label selection and unselection**
 
     Selected labels are displayed above the search bar for easy reference. Furthermore, the selection status of labels can be toggled on or off by clicking on those labels.
+    
+    ![select-label](readme-resources/images/select-label.png)
+    ![unselect-label](readme-resources/images/unselect-label.png)
+
+4. **Resolve conflicts among selected labels within non-exclusive groups**
+
+    Git Labels will prevent any conflicts due to selection of labels from non-exclusive groups. Only one label within a non-exclusive group should be selected at any one time for an issue and thus selection of more than one label from such a group will result in a conflict. In the example below, d.firstTimers and d.Contributors belong to the same group (i.e d dot group).
+
+    ![selected-labels](readme-resources/images/selected-labels.png)
 
 5. **Colorpicker**
 
     Instead of a fixed color palette, Git labels offers its users a colorpicker for selecting colors for newly created labels.
 
+    ![colorpicker](readme-resources/images/colorpicker.png)
+
 ## Built With
 
 jQuery - (["https://github.com/jquery/jquery"](https://github.com/jquery/jquery))
+
 Semantic UI - (["https://github.com/semantic-org/semantic-ui/"](https://github.com/semantic-org/semantic-ui/))
+
 PubSubJS - (["https://github.com/mroderick/PubSubJS"](https://github.com/mroderick/PubSubJS))
+
 ScrollIntoView - (["https://github.com/litera/jquery-scrollintoview"](https://github.com/litera/jquery-scrollintoview))
+
 Spectrum - (["https://github.com/bgrins/spectrum"](https://github.com/bgrins/spectrum))
