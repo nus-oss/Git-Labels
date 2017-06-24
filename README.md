@@ -15,6 +15,21 @@ These instructions will get you a copy of the project and run it as a Google Chr
 Google Chrome 56.0.2924 or above with javascript enabled
 ```
 
+### Download
+
+**[Click here to download latest version](https://github.com/jiajunGit/Git-Labels/archive/master.zip)**
+
+#### Code on Github
+
+You can also use the following links to access application specific downloads and git repositories:
+
+*   **Full Git Repository:**
+
+    The full git repository is at: <https://github.com/jiajunGit/Git-Labels>
+    Get it using the following command:
+
+        $ git clone git://github.com/jiajunGit/Git-Labels.git
+
 ### Installation
 
 1. **Download Git Labels**
