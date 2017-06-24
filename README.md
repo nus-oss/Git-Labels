@@ -7,7 +7,7 @@ Git Labels is a google chrome extension that help users better manage grouped la
 
 ## Getting Started
 
-These instructions will get you a copy of the project and run it as a Google Chrome Extension within Google Chrome on your local machine. See wiki for this project's developer notes.
+These instructions will get you a copy of the project and run it as a Google Chrome Extension within Google Chrome on your local machine. See [wiki](https://github.com/jiajunGit/Git-Labels/wiki) for this project's developer notes.
 
 ### Prerequisites
 
@@ -95,3 +95,7 @@ PubSubJS - (["https://github.com/mroderick/PubSubJS"](https://github.com/mroderi
 ScrollIntoView - (["https://github.com/litera/jquery-scrollintoview"](https://github.com/litera/jquery-scrollintoview))
 
 Spectrum - (["https://github.com/bgrins/spectrum"](https://github.com/bgrins/spectrum))
+
+## For Developers
+
+See [wiki](https://github.com/jiajunGit/Git-Labels/wiki) for this project's developer notes.
