@@ -165,7 +165,8 @@ body, .pusher {
 	color: #3B3738!important;
 }
 .custom-list-menu div.item.taken div.list-content {
-	color: #e62117!important;
+	/*color: #e62117!important;*/
+	color: #e94f64!important;
 }
 .custom-list-menu div.item .icon {
 	margin-right: 5px!important;
@@ -174,12 +175,21 @@ body, .pusher {
 }
 
 /* Group Container holding unselected labels */
-.group-container .content {
+.group-container.ui.raised.segment {
+	padding: 0.5rem 0.2rem 0.5rem 0.5rem!important;
+}
+.group-container .group-text-content {
 	color: white;
-	font-size: 110%; 
+	font-size: 140%; 
 	font-weight: bold;
 	vertical-align: middle;
 	margin-right: 0.1em;
+}
+.group-container .dash-group-text-content {
+	color: #df744a;
+}
+.group-container .dot-group-text-content {
+	color: #e5c454;
 }
 .collapsed-group-container .content{
 	color: white;

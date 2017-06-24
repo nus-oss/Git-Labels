@@ -329,6 +329,19 @@ LabelGroup.prototype.getExpandedContainerStartingTextNode = function() {
     }
 }
 
+LabelGroup.prototype.getGroupClass = function() {
+    switch(this.groupInfo.getGroupType()){
+        case GroupType.Dash:
+            return "dash-group-text-content";
+        case GroupType.Dot:
+            return "dot-group-text-content";
+        case GroupType.None:
+            return "none-group-text-content";
+        default:
+            return "unknown-group-text-content";
+    }
+}
+
 LabelGroup.prototype.createExpandedContainer = function(isCacheDOM) {
 
     var outerExpandedContainer = document.createElement("div");
@@ -344,7 +357,9 @@ LabelGroup.prototype.createExpandedContainer = function(isCacheDOM) {
     innerExpandedContainer.appendChild(innerExpandedContainerIcon);
 
     var innerExpandedContainerTextNode = document.createElement("span");
-    innerExpandedContainerTextNode.classList.add("content");
+    //innerExpandedContainerTextNode.classList.add("content");
+    innerExpandedContainerTextNode.classList.add("group-text-content");
+    innerExpandedContainerTextNode.classList.add(this.getGroupClass());
 
     var innerExpandedContainerText = this.getExpandedContainerStartingTextNode();
     innerExpandedContainerTextNode.appendChild(innerExpandedContainerText);
