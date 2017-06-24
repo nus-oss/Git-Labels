@@ -585,9 +585,13 @@ SearchFactory.prototype.styleSearchListToHide = function(searchMenuList) {
     searchMenuList.classList.add("hidden");
 }
 
-SearchFactory.prototype.cleanup = function() {
+SearchFactory.prototype.clearSearchInput = function() {
     this.originalInput = "";
     if(this.searchInput){
         this.searchInput.value = "";
     }
+}
+
+SearchFactory.prototype.cleanup = function() {
+    this.clearSearchInput();
 }
