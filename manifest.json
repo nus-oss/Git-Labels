@@ -1,8 +1,8 @@
 {
   "manifest_version": 2,
 
-  "name": "Git Flash",
-  "description": "Manage Github labels effectively",
+  "name": "Git Labels",
+  "description": "Manage grouped Github labels",
   "version": "1.0",
 
   "browser_action": {
