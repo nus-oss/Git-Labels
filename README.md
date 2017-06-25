@@ -72,9 +72,9 @@ The full git repository is at: <https://github.com/jiajunGit/Git-Labels> Get it 
     ![select-label](readme-resources/images/select-label.png)
     ![unselect-label](readme-resources/images/unselect-label.png)
 
-4. **Resolve conflicts among selected labels within non-exclusive groups**
+4. **Resolve conflicts among selected labels within exclusive groups**
 
-    Git Labels will prevent any conflicts due to selection of labels from non-exclusive groups. Only one label within a non-exclusive group should be selected at any one time for an issue and thus selection of more than one label from such a group will result in a conflict. In the example below, d.FirstTimers and d.Contributors belong to the same group (i.e d dot group).
+    Git Labels will prevent any conflicts due to selection of labels from exclusive groups. Only one label within a exclusive group should be selected at any one time for an issue and thus selection of more than one label from such a group will result in a conflict. In the example below, d.FirstTimers and d.Contributors belong to the same group (i.e d dot group).
 
     ![selected-labels](readme-resources/images/selected-labels.png)
 
