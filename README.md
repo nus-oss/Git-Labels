@@ -12,7 +12,7 @@ These instructions will get you a copy of the project and run it as a Google Chr
 ### Prerequisites
 
 ```
-Google Chrome 56.0.2924 or above with javascript enabled
+Google Chrome Browser (Tested on version 59.0.3071.109) with javascript enabled
 ```
 
 ### Download
