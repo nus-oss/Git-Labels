@@ -5,8 +5,12 @@
   "description": "Manage grouped Github labels",
   "version": "1.0",
 
+  "icons": { "16": "resources/git-labels-icon-16px.png",
+             "48": "resources/git-labels-icon-48px.png",
+             "128": "resources/git-labels-icon-128px.png" 
+  },
+
   "browser_action": {
-    "default_icon": "resources/icon.png",
     "default_popup": "src/popup/popup.html"
   },
 
