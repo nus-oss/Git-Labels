@@ -186,10 +186,13 @@ body, .pusher {
 	margin-right: 0.1em;
 }
 .group-container .dash-group-text-content {
-	color: #df744a;
+	color: #FA7C92;
 }
 .group-container .dot-group-text-content {
-	color: #e5c454;
+	color: #FFF7C0;
+}
+.group-container .none-group-text-content {
+	color: #77F3FF;
 }
 .collapsed-group-container .content{
 	color: white;
