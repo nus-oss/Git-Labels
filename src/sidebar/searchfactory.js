@@ -169,6 +169,7 @@ SearchFactory.prototype.handleFocusOffEvent = function() {
 
 SearchFactory.prototype.handleEnterKeyEvent = function() {
     PubSub.publish("search-bar/apply-selected-labels", {} );
+    this.clearSearchInput();
     return false;
 }
 
