@@ -32,6 +32,11 @@ var SearchFactory = function() {
         $(searchInput).focusout(this.handleFocusOffEvent.bind(this));
         $(searchList).on("mousedown", "div.item", this.handleListItemClickEvent.bind(this));
     */
+
+    /*  Events subscribed
+
+        PubSub.subscribe("selected-label/toggle-select-item-finished", this.handleApplyEvent.bind(this));
+    */
 }
 
 SearchFactory.prototype.handleSideBarVisibleEvent = function() {
@@ -44,6 +49,7 @@ SearchFactory.prototype.handleSideBarVisibleEvent = function() {
 
 SearchFactory.prototype.subscribeToExternalEvents = function() {
     PubSub.subscribe("side-bar-ui/visible", this.handleSideBarVisibleEvent.bind(this));
+    PubSub.subscribe("selected-label/toggle-select-item-finished", this.handleApplyEvent.bind(this));
 }
 
 SearchFactory.prototype.createSearchMenu = function(isCacheDOM) {
@@ -167,9 +173,42 @@ SearchFactory.prototype.handleFocusOffEvent = function() {
     this.hideSearchlist(this.searchMenuList);
 }
 
-SearchFactory.prototype.handleEnterKeyEvent = function() {
+SearchFactory.prototype.handleApplyEvent = function() {
     PubSub.publish("search-bar/apply-selected-labels", {} );
     this.clearSearchInput();
+    return false;
+}
+
+SearchFactory.prototype.handleEnterKeyEvent = function() {
+    
+    if(!this.searchInput || !this.nameToIDMap || !this.storage || !this.searchMenuList){
+        return this.handleApplyEvent();
+    }
+
+    var inputString = this.searchInput.value;
+    if(!inputString){
+        return this.handleApplyEvent();
+    }
+
+    var itemID = this.nameToIDMap.get(inputString.toLowerCase());
+    if(!itemID){
+        var firstListItem = this.searchMenuList.firstChild;
+        if( !firstListItem ){
+            return this.handleApplyEvent();
+        }
+        itemID = firstListItem.getAttribute("data-item-id");
+    }
+
+    var item = this.storage.getItem(itemID);
+    if(!item){
+        return this.handleApplyEvent();
+    }
+    
+    PubSub.publish("search/toggle-select-item", {itemID: item.getID(), isReturnEvent: true});
+
+    this.clearSearchInput();
+    this.hideSearchlist(this.searchMenuList);
+
     return false;
 }
 
@@ -200,7 +239,7 @@ SearchFactory.prototype.handleSpaceKeyEvent = function() {
 
     PubSub.publish("search/toggle-select-item", {itemID: item.getID()});
 
-    this.searchInput.value = "";
+    this.clearSearchInput();
     this.hideSearchlist(this.searchMenuList);
 
     return false;

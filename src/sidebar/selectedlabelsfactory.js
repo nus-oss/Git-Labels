@@ -11,6 +11,7 @@ var SelectedLabelsFactory = function() {
     // Events published
     // PubSub.publish("selected-label/select-item/"+groupID, {itemID: itemID} );
     // PubSub.publish("selected-label/unselect-item/"+groupID, {itemID: itemID} );
+    // PubSub.publish("selected-label/toggle-select-item-finished", {});
 
     /* Events handled
        PubSub.subscribe("group-label/unselect-item", this.handleExternalUnselectLabelEvent.bind(this));
@@ -68,13 +69,21 @@ SelectedLabelsFactory.prototype.handleSearchToggleSelectEvent = function(msg, da
 
     var label = this.selectedContainer.querySelector(".custom-label[data-item-id='"+itemID+"']");
 
+    var isSuccessful = false;
+
     if(!label){
-        return this.addLabel(itemID);
+        isSuccessful = this.addLabel(itemID);
     } else if(!this.isLabelSelected(label)) {
-        return this.handleLabelSelection(label);
+        isSuccessful = this.handleLabelSelection(label);
     } else {
-        return this.unselectLabel(label, true);
+        isSuccessful = this.unselectLabel(label, true);
     }
+
+    if(data.isReturnEvent){
+        PubSub.publish("selected-label/toggle-select-item-finished", {});
+    }
+
+    return isSuccessful;
 }
 
 SelectedLabelsFactory.prototype.handleExternalUnselectLabelEvent = function(msg, data) {
