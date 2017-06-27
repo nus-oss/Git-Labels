@@ -175,7 +175,7 @@ SearchFactory.prototype.handleEnterKeyEvent = function() {
 
 SearchFactory.prototype.handleSpaceKeyEvent = function() {
 
-    if(!this.searchInput || !this.nameToIDMap || !this.storage){
+    if(!this.searchInput || !this.nameToIDMap || !this.storage || !this.searchMenuList){
         return false;
     }
 
@@ -186,7 +186,11 @@ SearchFactory.prototype.handleSpaceKeyEvent = function() {
 
     var itemID = this.nameToIDMap.get(inputString.toLowerCase());
     if(!itemID){
-        return false;
+        var firstListItem = this.searchMenuList.firstChild;
+        if( !firstListItem ){
+            return false;
+        }
+        itemID = firstListItem.getAttribute("data-item-id");
     }
 
     var item = this.storage.getItem(itemID);
