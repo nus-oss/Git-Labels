@@ -643,20 +643,14 @@ SearchFactory.prototype.createMatchedList = function(pattern) {
 
         list.push(itemInfo);
     }
-    
+
     list.sort(this.searchListCompareFunc);
 
     return list;
 }
 
 SearchFactory.prototype.searchListCompareFunc = function(a, b){
-
-    var aScore = a.score;
-    var bScore = b.score;
-
-    if(aScore > bScore){ return -1; }
-    else if(bScore > aScore){ return 1; }
-    else { return 0; }
+    return b.score-a.score;
 }
 
 SearchFactory.prototype.createListItem = function(itemInfo) {
