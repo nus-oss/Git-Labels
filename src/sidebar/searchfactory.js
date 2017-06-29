@@ -601,9 +601,7 @@ SearchFactory.prototype.createFormattedMatchedString = function( str, firstIndex
 		formattedStr += strCharObj.value;
 	}
 
-	var score = (totalLength > 0 ? ((numMatched-numMismatch)/totalLength) : 0); 
-
-    //console.log("string: ", str, " | matched: ", numMatched, " | mismatched: ", numMismatch, " | totallength: ", totalLength, " | score: ", score);
+	var score = (totalLength > 0 ? ((numMatched-numMismatch)/totalLength) : 0);
 
 	return [score, formattedStr];
 }
@@ -645,9 +643,7 @@ SearchFactory.prototype.createMatchedList = function(pattern) {
 
         list.push(itemInfo);
     }
-
-    //console.log("--------------------------------------------");
-
+    
     list.sort(this.searchListCompareFunc);
 
     return list;
