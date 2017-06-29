@@ -170,3 +170,7 @@ ItemStorage.prototype.getItemsIterator = function() {
 ItemStorage.prototype.getSelectedItemIDsIterator = function() {
     return this.selectItemsIDs.keys();
 }
+
+ItemStorage.prototype.getItemCount = function() {
+    return this.items.size;
+}

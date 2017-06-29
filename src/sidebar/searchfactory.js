@@ -1,6 +1,5 @@
 var SearchFactory = function() {
 
-    this.search = new FuzzySearchModule();
     this.originalInput = "";
     this.maxItems = 10;
 
@@ -16,7 +15,9 @@ var SearchFactory = function() {
         this.searchMenuContainer,
         this.searchMenuList,
         this.nameToIDMap,
-        this.sideBar
+        this.sideBar,
+        this.nameArrayList,
+        this.nameArrayListIDs
     */
 
     /*  Events Published
@@ -109,8 +110,13 @@ SearchFactory.prototype.createSearchBar = function( placeholderText, isCacheDOM 
 
 SearchFactory.prototype.createSearchStructures = function(storage) {
 
-    var nameToIDMap = new Map();
+    var numItems = storage.getItemCount();
 
+    var nameToIDMap = new Map();
+    var nameArrayList = new Array(numItems);
+    var nameArrayListIDs = new Array(numItems);
+
+    var index = 0;
     var itemItr = storage.getItemsIterator();
     while(true){
 
@@ -123,9 +129,13 @@ SearchFactory.prototype.createSearchStructures = function(storage) {
         var item = itemObj.value;
 
         nameToIDMap.set( item.getFullName().toLowerCase(), item.getID() );
+        nameArrayList[index] = this.createArrayFromString(item.getFullName());
+        nameArrayListIDs[index] = item.getID();
+
+        ++index;
     }
 
-    return nameToIDMap;
+    return [nameToIDMap, nameArrayList, nameArrayListIDs];
 }
 
 SearchFactory.prototype.updateSearchData = function(storage) {
@@ -135,7 +145,11 @@ SearchFactory.prototype.updateSearchData = function(storage) {
     }
 
     this.storage = storage;
-    this.nameToIDMap = this.createSearchStructures(storage);
+    var structures = this.createSearchStructures(storage);
+
+    this.nameToIDMap = structures[0];
+    this.nameArrayList = structures[1];
+    this.nameArrayListIDs = structures[2];
 
     return true;
 }
@@ -452,6 +466,148 @@ SearchFactory.prototype.populateSearchList = function(pattern) {
     return matchedList.length;
 }
 
+SearchFactory.prototype.createArrayFromString = function( str ) {
+
+	const strItr = str[Symbol.iterator]();
+	var strArray = [];
+
+	while(true){
+		var strCharObj = strItr.next();
+		if(strCharObj.done){
+			break;
+		}
+		strArray.push(strCharObj.value.toLowerCase());
+	}
+
+	return strArray;
+}
+
+SearchFactory.prototype.isSpecialCharacters = function(characters) {
+	return /^[!-/:-@\[-`{-~\s]+$/.test(characters);
+}
+
+SearchFactory.prototype.getMatchingIndices = function( patternArray, itemNameArray ) {
+
+	if(patternArray.length <= 0){
+		return null;
+	}
+
+	var firstIndexMatchedArray = new Array(itemNameArray.length);
+	var lastIndexMatchedArray = new Array(itemNameArray.length);
+
+	for(let i = 0, sz = itemNameArray.length - patternArray.length; i <= sz; ++i){
+
+		var matchedArrayLength = 0;
+		var isMatched = false;
+		var lastMatchedIndex = -1;
+		var firstMatchedIndex = -1;
+        var numMismatch = 0;
+
+		for(let j = 0, k = i, len = patternArray.length; j < len;){
+
+			if(k >= itemNameArray.length){
+				isMatched = false;
+				break;
+			}
+
+			if(patternArray[j] === itemNameArray[k]){
+				if( firstMatchedIndex < i ) {
+					firstMatchedIndex = k;
+				}
+				lastMatchedIndex = k;
+				isMatched = true;
+				++j;
+				++k;
+				continue;
+			}
+
+			if(!this.isSpecialCharacters(patternArray[j]) && this.isSpecialCharacters(itemNameArray[k])){
+				
+				if(firstMatchedIndex >= i){
+					firstIndexMatchedArray[matchedArrayLength] = firstMatchedIndex;
+					lastIndexMatchedArray[matchedArrayLength] = lastMatchedIndex;
+					++matchedArrayLength;
+                    ++numMismatch;
+					firstMatchedIndex = -1;
+					lastMatchedIndex = -1;
+				}
+				++k;
+
+			} else {
+				isMatched = false;
+				break;
+			}
+		}
+
+		if(isMatched){
+			if(firstMatchedIndex >= i && lastMatchedIndex >= i){
+				firstIndexMatchedArray[matchedArrayLength] = firstMatchedIndex;
+				lastIndexMatchedArray[matchedArrayLength] = lastMatchedIndex;
+				++matchedArrayLength;
+			}
+			return [firstIndexMatchedArray, lastIndexMatchedArray, matchedArrayLength, numMismatch];
+		}
+	}
+
+	return null;
+}
+
+SearchFactory.prototype.createFormattedMatchedString = function( str, firstIndexMatchedArray, lastIndexMatchedArray, 
+                                                                    matchedArrayLength, numMismatch ) {
+
+	var numMatched = 0;
+	var totalLength = 0;
+	var formattedStr = "";
+	var startFrom = 0;
+	const strItr = str[Symbol.iterator]();
+
+	for(let j = 0; j < matchedArrayLength; ++j ){
+
+		let first = firstIndexMatchedArray[j];
+		let last = lastIndexMatchedArray[j];
+		numMatched += (last-first+1);
+
+		for(let i = startFrom; i < first; ++i){
+			var strCharObj = strItr.next();
+			if(strCharObj.done){
+				return null;
+			}
+			++totalLength;
+			formattedStr += strCharObj.value;
+		}
+
+		formattedStr += "<b>";
+
+		for(let i = first; i <= last; ++i){
+			var strCharObj = strItr.next();
+			if(strCharObj.done){
+				return null;
+			}
+			++totalLength;
+			formattedStr += strCharObj.value;
+		}
+
+		formattedStr += "</b>";
+
+		startFrom = last + 1;
+	}
+
+	while(true){
+		var strCharObj = strItr.next();
+		if(strCharObj.done){
+			break;
+		}
+		++totalLength;
+		formattedStr += strCharObj.value;
+	}
+
+	var score = (totalLength > 0 ? ((numMatched-numMismatch)/totalLength) : 0); 
+
+    //console.log("string: ", str, " | matched: ", numMatched, " | mismatched: ", numMismatch, " | totallength: ", totalLength, " | score: ", score);
+
+	return [score, formattedStr];
+}
+
 SearchFactory.prototype.createMatchedList = function(pattern) {
 
     if(!this.storage){
@@ -459,26 +615,29 @@ SearchFactory.prototype.createMatchedList = function(pattern) {
     }
 
     var list = [];
+    var patternStringArray = this.createArrayFromString(pattern);
 
-    var itemItr = this.storage.getItemsIterator();
-    while(true){
+    for(var i = 0, size = this.nameArrayList.length; i < size; ++i){
 
-        var itemObj = itemItr.next();
+        var indices = this.getMatchingIndices(patternStringArray, this.nameArrayList[i]);
 
-        if(itemObj.done){
-            break;
-        }
-
-        var item = itemObj.value;
-        var result = this.search.fuzzyMatch(pattern, item.getFullName());
-
-        if(!result){
+        if(!indices){
             continue;
         }
 
+        var itemID = this.nameArrayListIDs[i];
+        var item = this.storage.getItem(itemID);
+
+        if(!item){
+            continue;
+        }
+
+        var fullItemName = item.getFullName();
+        var result = this.createFormattedMatchedString(fullItemName, indices[0], indices[1], indices[2], indices[3]);
+
         var itemInfo = {
-            score: result.score,
-            formattedStr: result.formattedStr,
+            score: result[0],
+            formattedStr: result[1],
             id: item.getID(),
             color: item.getColor(),
             isSelected: item.isSelected()
@@ -486,6 +645,8 @@ SearchFactory.prototype.createMatchedList = function(pattern) {
 
         list.push(itemInfo);
     }
+
+    //console.log("--------------------------------------------");
 
     list.sort(this.searchListCompareFunc);
 

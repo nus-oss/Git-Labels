@@ -59,7 +59,6 @@
               "src/sidebar/sidebarfactory.js",
               "src/sidebar/launchbuttonfactory.js",
               "src/sidebar/layoutmanager.js",
-              "src/sidebar/fuzzysearchmodule.js",
 
               // Page Controllers
               "src/page-controllers/existingissuepagecontroller.js",
