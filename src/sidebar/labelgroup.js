@@ -145,7 +145,7 @@ LabelGroup.prototype.createCollapsedContainer = function(isCacheDOM) {
     outerCollapsedContainer.setAttribute("data-group-type", this.groupInfo.getGroupType()+"");
 
     var innerCollapsedContainer = document.createElement("div");
-    innerCollapsedContainer.classList.add("ui", "container");
+    innerCollapsedContainer.classList.add("inner-collapsed-group-container", "ui", "container");
 
     var collapsedContainerIcon = document.createElement("i")
     collapsedContainerIcon.classList.add("big", "caret", "down", "icon");
@@ -350,7 +350,7 @@ LabelGroup.prototype.createExpandedContainer = function(isCacheDOM) {
     outerExpandedContainer.setAttribute("data-group-type", this.groupInfo.getGroupType()+"");
 
     var innerExpandedContainer = document.createElement("div");
-    innerExpandedContainer.classList.add("ui", "container");
+    innerExpandedContainer.classList.add("inner-group-container" ,"ui", "container");
 
     var innerExpandedContainerIcon = document.createElement("i");
     innerExpandedContainerIcon.classList.add("big", "caret", "up", "icon");

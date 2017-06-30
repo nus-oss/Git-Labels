@@ -178,6 +178,10 @@ body, .pusher {
 .group-container.ui.raised.segment {
 	padding: 0.5rem 0.2rem 0.5rem 0.5rem!important;
 }
+.inner-collapsed-group-container.ui.container,
+.inner-group-container.ui.container {
+	padding: 0px!important;
+}
 .group-container .group-text-content {
 	color: white;
 	font-size: 140%; 

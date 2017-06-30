@@ -63,6 +63,7 @@
               // Page Controllers
               "src/page-controllers/existingissuepagecontroller.js",
               "src/page-controllers/newissuepagecontroller.js",
+              "src/page-controllers/newpullrequestpagecontroller.js",
               "src/page-controllers/issuepagecontroller.js",
               "src/page-controllers/labelpagecontroller.js",
 

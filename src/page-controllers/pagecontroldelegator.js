@@ -6,6 +6,8 @@ var PageControlDelegator = function() {
     this.AnalyticsContentForNewIssue = "/<user-name>/<repo-name>/issues/new";
     this.AnalyticsContentForExistingIssue = "/<user-name>/<repo-name>/issues/show";
     this.AnalyticsContentForNewLabels = "/<user-name>/<repo-name>/labels/index";
+    this.AnalyticsContentForNewPullRequest = "/<user-name>/<repo-name>/compare/show";
+    this.AnalyticsContentForExistingPullRequest = "/<user-name>/<repo-name>/pull_requests/show";
 }
 
 PageControlDelegator.prototype.cleanup = function() {
@@ -28,7 +30,11 @@ PageControlDelegator.prototype.runPageController = function() {
         case this.AnalyticsContentForNewIssue:
             this.issuePageController.runOnNewLabelsPage();
             return true;
+        case this.AnalyticsContentForNewPullRequest:
+            this.issuePageController.runOnNewPullRequestPage();
+            return true;
         case this.AnalyticsContentForExistingIssue:
+        case this.AnalyticsContentForExistingPullRequest:
             this.issuePageController.runOnExistingLabelsPage();
             return true;
         case this.AnalyticsContentForNewLabels:
@@ -48,7 +54,8 @@ PageControlDelegator.prototype.run = function() {
 
 PageControlDelegator.prototype.attachUrlListener = function() {
     chrome.runtime.onMessage.addListener( function(request, sender, sendResponse) {
-        $(document).ready(this.run.bind(this));
+        //$(document).ready(this.run.bind(this));
+        this.run();
     }.bind(this));
 }
 
