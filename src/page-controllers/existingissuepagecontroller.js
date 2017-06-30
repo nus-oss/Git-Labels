@@ -211,18 +211,20 @@ ExistingIssuePageController.prototype.run = function(layoutManager) {
     }
 }
 
+ExistingIssuePageController.prototype.handleClickEvent = function() {
+    if(this.layoutManager){
+        this.layoutManager.toggleSideBar();
+    }
+}
+
 ExistingIssuePageController.prototype.overrideLabelButtonListeners = function() {
 
-    var gitLabelButton = document.body.querySelector(".sidebar-labels .label-select-menu button.js-menu-target");
+    var gitLabelButton = document.body.querySelector(".sidebar-labels .label-select-menu button.discussion-sidebar-toggle");
 
     if(gitLabelButton){
-
         gitLabelButton.classList.remove("js-menu-target");
-        gitLabelButton.addEventListener("click", function() {
-            if(this.layoutManager){
-                this.layoutManager.toggleSideBar();
-            }
-        }.bind(this), true);
+        gitLabelButton.removeEventListener("click", this.handleClickEvent.bind(this), true);
+        gitLabelButton.addEventListener("click", this.handleClickEvent.bind(this), true);
     }
 }
 

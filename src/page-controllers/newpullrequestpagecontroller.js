@@ -152,15 +152,20 @@ NewPullRequestPageController.prototype.hasPermissionToManageLabels = function() 
     return document.body.querySelector(this.GitLabelListQuery) != null;
 }
 
+NewPullRequestPageController.prototype.handleClickEvent = function() {
+    if(this.layoutManager){
+        this.layoutManager.toggleSideBar();
+    }
+}
+
 NewPullRequestPageController.prototype.overrideLabelModalButtonListeners = function() {
-    var labelModalButton = document.body.querySelector(".sidebar-labels .label-select-menu button.js-menu-target");
+    
+    var labelModalButton = document.body.querySelector(".sidebar-labels .label-select-menu button.discussion-sidebar-toggle");
+
     if(labelModalButton){
         labelModalButton.classList.remove("js-menu-target");
-        labelModalButton.addEventListener("click", function(e) {
-            if(this.layoutManager){
-                this.layoutManager.toggleSideBar();
-            }
-        }.bind(this), true);
+        labelModalButton.removeEventListener("click", this.handleClickEvent.bind(this), true);
+        labelModalButton.addEventListener("click", this.handleClickEvent.bind(this), true);
     }
 }
 
