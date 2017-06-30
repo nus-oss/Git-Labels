@@ -37,9 +37,6 @@ PageControlDelegator.prototype.runPageController = function() {
         case this.AnalyticsContentForExistingPullRequest:
             this.issuePageController.runOnExistingLabelsPage();
             return true;
-        case this.AnalyticsContentForNewLabels:
-            this.labelPageController.run();
-            return true;
         default:
             break;
     }
