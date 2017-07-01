@@ -339,6 +339,10 @@ LayoutManager.prototype.cleanup = function() {
 
     // Clean up for sidebar
     if(this.sideBar != null && document.body.contains(this.sideBar)){
+        var $sideBar = $(this.sideBar);
+        if($sideBar.sidebar("is visible")){
+            $sideBar.sidebar("toggle");
+        }
         this.hideSidebar(this.sideBar);
     }
     if(this.launchButton != null && document.body.contains(this.launchButton)) {
