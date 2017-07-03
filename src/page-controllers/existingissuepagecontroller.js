@@ -388,14 +388,12 @@ ExistingIssuePageController.prototype.attachGitSideBarObserver = function() {
     if(gitSideBar){
 
         this.sideBarObserver = new MutationObserver(function(mutations) {
-            mutations.forEach(function(mutation) {
+            for(var i = 0; i < mutations.length; ++i){
                 this.overrideLabelButtonListeners();
-            }.bind(this));    
+            }  
         }.bind(this));
 
-        var config = { childList: true };
-
-        this.sideBarObserver.observe(gitSideBar, config);
+        this.sideBarObserver.observe(gitSideBar, { childList: true });
     }
 }
 

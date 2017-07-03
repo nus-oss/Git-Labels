@@ -130,10 +130,10 @@ LabelPageController.prototype.handleInputValueChanges = function(mutation, defau
 LabelPageController.prototype.attachInputValueObserver = function() {
 
     var observer = new MutationObserver(function(mutations){
-        mutations.forEach(function(mutation){
-            this.handleInputValueChanges(mutation);
+        for(var i = 0; i < mutations.length; ++i){
+            this.handleInputValueChanges(mutations[i]);
             observer.disconnect();
-        }.bind(this));
+        }
     }.bind(this));
 
     var config = {
@@ -200,7 +200,9 @@ LabelPageController.prototype.attachBoxColorChangeListener = function() {
     }
 
     var observer = new MutationObserver(function(mutations){
-        mutations.forEach(this.handleColorBoxStyleChanges.bind(this));
+        for(var i = 0; i < mutations.length; ++i){
+            this.handleColorBoxStyleChanges(mutations[i]);
+        }
     }.bind(this));
 
     var config = {

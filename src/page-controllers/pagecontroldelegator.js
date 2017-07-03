@@ -51,8 +51,7 @@ PageControlDelegator.prototype.run = function() {
 
 PageControlDelegator.prototype.attachUrlListener = function() {
     chrome.runtime.onMessage.addListener( function(request, sender, sendResponse) {
-        //$(document).ready(this.run.bind(this));
-        this.run();
+        $(document).ready(this.run.bind(this));
     }.bind(this));
 }
 

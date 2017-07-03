@@ -33,7 +33,10 @@
               "src/styles/colorpicker.css",
               "src/styles/labelui.css" ],
 
-      "js": [ // Libaries used
+      "js": [ // Global override scripts
+              "src/globals/override.js",
+
+              // Libaries used
               "libs/jquery/jquery-3.2.1.min.js",
               "libs/semantic/semantic.js",
               "libs/colorpicker/spectrum.min.js",
@@ -70,7 +73,7 @@
               // Page Delegator
               "src/page-controllers/pagecontroldelegator.js" ],
 
-      "run_at": "document_end"
+      "run_at": "document_start"
     }
   ],
 
