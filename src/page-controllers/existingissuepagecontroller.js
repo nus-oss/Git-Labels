@@ -98,12 +98,165 @@ ExistingIssuePageController.prototype.handleExternalApplyLabelsEvent = function(
     }
 
     $.post(postInfo.url, data)
-     .always(this.handleAfterPostRequest.bind(this));
+     .done(this.handleSuccessfulPostRequest.bind(this))
+     .fail(this.handleUnsuccessfulPostRequest.bind(this));
 
     return true;
 }
 
-ExistingIssuePageController.prototype.handleAfterPostRequest = function() {
+ExistingIssuePageController.prototype.replaceGitFormData = function(newUTF8Value, newMethodValue, newAuthTokenValue) {
+
+    var oldForm = document.body.querySelector(".discussion-sidebar-item.sidebar-labels.js-discussion-sidebar-item form.js-issue-sidebar-form");
+
+    if(!oldForm){
+        return false;
+    }
+
+    if(newUTF8Value){
+        var oldUTF8 = oldForm.querySelector("input[name='utf8']");
+        if(oldUTF8){
+            oldUTF8.setAttribute("value", newUTF8Value);
+        }
+    }
+
+    if(newMethodValue){
+        var oldMethod = oldForm.querySelector("input[name='_method']");
+        if(oldMethod){
+            oldMethod.setAttribute("value", newMethodValue);
+        }
+    }
+
+    if(newAuthTokenValue){
+        var oldAuthToken = oldForm.querySelector("input[name='authenticity_token']");
+        if(oldAuthToken){
+            oldAuthToken.setAttribute("value", newAuthTokenValue);
+        }
+    }
+
+    return true;
+}
+
+ExistingIssuePageController.prototype.updateGitFormData = function($parsedResponse) {
+
+    var $newForm = $parsedResponse.find(".discussion-sidebar-item.sidebar-labels.js-discussion-sidebar-item form.js-issue-sidebar-form");
+
+    if(!$newForm){
+        return false;
+    }
+
+    var $newUTF8 = $newForm.find("input[name='utf8']");
+    if($newUTF8){
+        var newUTF8Value = $newUTF8.attr("value");
+    }
+
+    var $newMethod = $newForm.find("input[name='_method']");
+    if($newMethod){
+        var newMethodValue = $newMethod.attr("value");
+    }
+
+    var $newAuthToken = $newForm.find("input[name='authenticity_token']");
+    if($newAuthToken){
+        var newAuthTokenValue = $newAuthToken.attr("value");
+    }
+    
+    return this.replaceGitFormData(newUTF8Value, newMethodValue, newAuthTokenValue);
+}
+
+ExistingIssuePageController.prototype.replaceGitLabelsDisplay = function(labelSideBarItem) {
+
+    if(!labelSideBarItem){
+        return false;
+    }
+
+    var $labelSideBarItem = $(labelSideBarItem);
+    var $newLabelsDisplay = null;
+
+    try{
+        $newLabelsDisplay = $labelSideBarItem.find(".labels.css-truncate");
+    } catch(exception){
+        return false;
+    }
+
+    this.updateGitFormData($labelSideBarItem);
+
+    if(!$newLabelsDisplay){
+        return false;
+    }
+
+    var oldLabelsDisplay = document.body.querySelector(".discussion-sidebar-item.sidebar-labels.js-discussion-sidebar-item .labels.css-truncate");
+    if(!oldLabelsDisplay){
+        return false;
+    }
+
+    $(oldLabelsDisplay).replaceWith($newLabelsDisplay);
+
+    return true;
+}
+
+ExistingIssuePageController.prototype.processReplyForSideBar = function(reply) {
+
+    if(!reply){
+        return false;
+    }
+
+    var $reply = $(reply);
+    var $newLabelsDisplay = null;
+
+    try{
+        $newLabelsDisplay = $(reply).find(".discussion-sidebar-item.sidebar-labels.js-discussion-sidebar-item .labels.css-truncate"); 
+    } catch(exception) {
+        return false;
+    }
+
+    this.updateGitFormData($reply);
+
+    if(!$newLabelsDisplay){
+        return false;
+    }
+
+    var oldLabelsDisplay = document.body.querySelector(".discussion-sidebar-item.sidebar-labels.js-discussion-sidebar-item .labels.css-truncate");
+    if(!oldLabelsDisplay){
+        return false;
+    }
+
+    $(oldLabelsDisplay).replaceWith($newLabelsDisplay);
+
+    return true;
+}
+
+ExistingIssuePageController.prototype.updatedGitLabelsDisplay = function(response) {
+
+    var discussionSideBar = document.getElementById("partial-discussion-sidebar");
+
+    if(!discussionSideBar){
+        return this.replaceGitLabelsDisplay(response);
+    }
+
+    var url = discussionSideBar.getAttribute("data-url");
+
+    if(!url){
+        return this.replaceGitLabelsDisplay(response);
+    }
+
+    $.get(url)
+     .done(function(reply){
+        if(!this.processReplyForSideBar(reply)){
+            this.replaceGitLabelsDisplay(response);
+        }
+     }.bind(this))
+     .fail(function(){
+        this.replaceGitLabelsDisplay(response);
+     }.bind(this));
+
+    return true;
+}
+
+ExistingIssuePageController.prototype.handleSuccessfulPostRequest = function(response) {
+    this.retrieveLabelsFromGETRequest();
+    this.updatedGitLabelsDisplay(response);
+}
+
+ExistingIssuePageController.prototype.handleUnsuccessfulPostRequest = function() {
     this.retrieveLabelsFromGETRequest();
 }
 
