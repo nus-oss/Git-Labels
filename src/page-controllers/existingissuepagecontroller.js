@@ -2,7 +2,7 @@ var ExistingIssuePageController = function(layoutManager) {
     this.GitLabelListQuery = ".sidebar-labels .select-menu-modal";
     this.GitLabelListLocation = ".sidebar-labels .select-menu-modal-holder .js-select-menu-deferred-content";
     this.GitLabelListItemLocation = ".sidebar-labels .select-menu-modal-holder .js-select-menu-deferred-content .select-menu-list .select-menu-item";
-     /*
+    /*
         this.storage,
         this.layoutManager,
         this.sideBarObserver
@@ -390,6 +390,7 @@ ExistingIssuePageController.prototype.attachGitSideBarObserver = function() {
         this.sideBarObserver = new MutationObserver(function(mutations) {
             for(var i = 0; i < mutations.length; ++i){
                 this.overrideLabelButtonListeners();
+                this.updateUI(mutations[i]);
             }  
         }.bind(this));
 
@@ -407,4 +408,52 @@ ExistingIssuePageController.prototype.cleanUp = function() {
 ExistingIssuePageController.prototype.setupGitDOMListeners = function() {
     this.overrideLabelButtonListeners();
     this.attachGitSideBarObserver();
+}
+
+ExistingIssuePageController.prototype.getFirstMatchedElementFromNodeList = function(nodeList, classNameQuery) {
+    for(var i = 0; i < nodeList.length; ++i){
+        var elements = nodeList[i].getElementsByClassName(classNameQuery);
+        if(elements.length > 0){
+            return elements[0];
+        }
+    }
+    return null;
+}
+
+ExistingIssuePageController.prototype.updateUI = function(mutation) {
+
+    if(!this.layoutManager || !mutation.target || mutation.target.className !== "discussion-sidebar"){
+        return false;
+    }
+
+    var addedNodes = mutation.addedNodes;
+    var removedNodes = mutation.removedNodes;
+
+    if(!addedNodes || !removedNodes){
+        return false;
+    }
+
+    var oldSelectedLabelList = this.getFirstMatchedElementFromNodeList(removedNodes, "labels css-truncate");
+    var newSelectedLabelList = this.getFirstMatchedElementFromNodeList(addedNodes, "labels css-truncate");
+
+    if(!oldSelectedLabelList || !newSelectedLabelList){
+        return false;
+    }
+
+    var oldSelectedLabels = oldSelectedLabelList.querySelectorAll(".label.css-truncate-target");
+    var newSelectedLabels = newSelectedLabelList.querySelectorAll(".label.css-truncate-target");
+
+    if( oldSelectedLabels.length === newSelectedLabels.length ) {
+        var isSame = true;
+        for(var i = 0; i < oldSelectedLabels.length; ++i){
+            if(oldSelectedLabels[i].textContent !== newSelectedLabels[i].textContent){
+                isSame = false;
+                break;
+            }
+        }
+        if(isSame){
+            return true;
+        }
+    }
+    return this.retrieveLabelsFromGETRequest();
 }
