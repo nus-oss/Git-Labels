@@ -6,7 +6,7 @@ Git Labels is a google chrome extension that help users better manage grouped la
 
 ## Getting Started
 
-These instructions will get you a copy of the project and run it as a Google Chrome Extension within Google Chrome on your local machine. See [wiki](https://github.com/jiajunGit/Git-Labels/wiki) for this project's developer notes.
+These instructions will get you a copy of the project and run it as a Google Chrome Extension within Google Chrome on your local machine. See [wiki](https://github.com/GitHubExtensions/Git-Labels/wiki) for this project's developer notes.
 
 ### Prerequisites
 
@@ -18,13 +18,13 @@ Google Chrome Browser (Tested on version 59.0.3071.109) with javascript enabled
 
 #### Direct Link
 
-**[Click here to download latest version](https://github.com/jiajunGit/Git-Labels/archive/master.zip)**
+**[Click here to download latest version](https://github.com/GitHubExtensions/Git-Labels/archive/master.zip)**
 
 #### Code on Github
 
-The full git repository is at: <https://github.com/jiajunGit/Git-Labels> Get it using the following command:
+The full git repository is at: <https://github.com/GitHubExtensions/Git-Labels> Get it using the following command:
 
-        $ git clone https://github.com/jiajunGit/Git-Labels.git
+        $ git clone https://github.com/GitHubExtensions/Git-Labels.git
 
 ### Installation
 
@@ -102,4 +102,4 @@ Spectrum - <https://github.com/bgrins/spectrum>
 
 ## For Developers
 
-See [wiki](https://github.com/jiajunGit/Git-Labels/wiki) for this project's developer notes.
+See [wiki](https://github.com/GitHubExtensions/Git-Labels/wiki) for this project's developer notes.
