@@ -365,7 +365,7 @@ SearchFactory.prototype.handleDownArrowEvent = function() {
     return true;
 }
 
-SearchFactory.prototype.handleEscKeyEvent = function(event) {
+SearchFactory.prototype.handleEscKeyEvent = function() {
     if(this.searchMenuList && this.isSearchMenuListShown(this.searchMenuList)){
         this.styleSearchListToHide(this.searchMenuList);
     } else {
@@ -386,7 +386,7 @@ SearchFactory.prototype.handleKeyDownEvent = function(event) {
         case "ArrowDown":
             return !this.handleDownArrowEvent();
         case "Escape":
-            return !this.handleEscKeyEvent(event);
+            return !this.handleEscKeyEvent();
         default:
             break;
     }
