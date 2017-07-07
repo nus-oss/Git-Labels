@@ -6,13 +6,16 @@ var SideBarFactory = function() {
 }
 
 SideBarFactory.prototype.handleExternalApplyLabelsEvent = function() {
-    if(this.hasStateInitialized && this.sideBar){
-        $(this.sideBar).sidebar('hide');
-    }
+    this.hideSideBar();
+}
+
+SideBarFactory.prototype.handleExternalEscapeKeyEvent = function() {
+    this.hideSideBar();
 }
 
 SideBarFactory.prototype.subscribeToExternalEvents = function() {
     PubSub.subscribe( "search-bar/apply-selected-labels", this.handleExternalApplyLabelsEvent.bind(this));
+    PubSub.subscribe( "search-bar/escape-key-triggered", this.handleExternalEscapeKeyEvent.bind(this) );
 }
 
 SideBarFactory.prototype.createSideBar = function() {
@@ -43,6 +46,12 @@ SideBarFactory.prototype.initializeSideBarState = function(sideBar) {
     }
 
     return true;
+}
+
+SideBarFactory.prototype.hideSideBar = function() {
+    if(this.hasStateInitialized && this.sideBar){
+        $(this.sideBar).sidebar('hide');
+    }
 }
 
 SideBarFactory.prototype.create = function() {

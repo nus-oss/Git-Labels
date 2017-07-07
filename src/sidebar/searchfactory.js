@@ -365,8 +365,12 @@ SearchFactory.prototype.handleDownArrowEvent = function() {
     return true;
 }
 
-SearchFactory.prototype.handleEscKeyEvent = function() {
-    this.hideSearchlist(this.searchMenuList);
+SearchFactory.prototype.handleEscKeyEvent = function(event) {
+    if(this.searchMenuList && this.isSearchMenuListShown(this.searchMenuList)){
+        this.styleSearchListToHide(this.searchMenuList);
+    } else {
+        PubSub.publish("search-bar/escape-key-triggered");
+    }
     return true;
 }
 
@@ -382,7 +386,7 @@ SearchFactory.prototype.handleKeyDownEvent = function(event) {
         case "ArrowDown":
             return !this.handleDownArrowEvent();
         case "Escape":
-            return !this.handleEscKeyEvent();
+            return !this.handleEscKeyEvent(event);
         default:
             break;
     }
