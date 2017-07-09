@@ -38,7 +38,9 @@ SideBarFactory.prototype.initializeSideBarState = function(sideBar) {
 
     $(sideBar).sidebar({
         dimPage: false,
-        transition: 'overlay'
+        transition: 'overlay',
+        useLegacy: true,
+        duration: 1
     }).sidebar('hide');
 
     if(sideBar === this.sideBar){

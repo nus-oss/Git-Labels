@@ -45,7 +45,7 @@ SearchFactory.prototype.handleSideBarVisibleEvent = function() {
         if(this.searchInput){
             this.searchInput.focus();
         }
-    }.bind(this), 600);
+    }.bind(this), 20);
 }
 
 SearchFactory.prototype.subscribeToExternalEvents = function() {
