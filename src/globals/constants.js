@@ -11,6 +11,12 @@ var MouseButtonType = {
     Right: 3
 }
 
+var UpdateUIType = {
+    Error: 0,
+    UpdateData: 1,
+    CreateAll: 2
+}
+
 /*
 
   Event types:

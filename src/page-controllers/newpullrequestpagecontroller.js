@@ -103,7 +103,7 @@ NewPullRequestPageController.prototype.handleFailedPostRequest = function() {
 NewPullRequestPageController.prototype.handleAfterPostRequest = function() {
     if(this.layoutManager){
         this.storage = this.getLabelsFromDOM();
-        this.layoutManager.updateUI(this.storage);
+        this.layoutManager.updateUIWithData(this.storage);
     }
 }
 
@@ -173,7 +173,7 @@ NewPullRequestPageController.prototype.setupPageListeners = function() {
     this.overrideLabelModalButtonListeners();
 }
 
-NewPullRequestPageController.prototype.handleAfterScriptInitialized = function(mutation) {
+NewPullRequestPageController.prototype.handleAfterScriptInitialized = function(mutation, updateType) {
     
     var target = mutation.target;
 
@@ -183,14 +183,14 @@ NewPullRequestPageController.prototype.handleAfterScriptInitialized = function(m
 
     if(!this.isUIInitialized && this.layoutManager && this.storage){
         this.isUIInitialized = true;
-        this.layoutManager.initializeUI(this.storage);
+        this.layoutManager.populateUIWithData(updateType, this.storage);
         return true;
     }
 
     return false;
 }
 
-NewPullRequestPageController.prototype.canUIInitialize = function() {
+NewPullRequestPageController.prototype.canUIInitialize = function(updateType) {
 
     var textPendingEle = document.body.querySelector(".gh-header .pre-mergability .text-pending");
 
@@ -200,7 +200,7 @@ NewPullRequestPageController.prototype.canUIInitialize = function() {
 
     var observer = new MutationObserver(function(mutations){
         for( let i = 0, sz = mutations.length; i < sz; ++i ){
-            if(this.handleAfterScriptInitialized(mutations[i])){
+            if(this.handleAfterScriptInitialized(mutations[i], updateType)){
                 observer.disconnect();
                 break;
             }
@@ -219,10 +219,11 @@ NewPullRequestPageController.prototype.run = function(layoutManager) {
         this.layoutManager = layoutManager;
         this.isUIInitialized = false;
         this.setupPageListeners();
+        var updateType = this.layoutManager.initializeUI();
         this.storage = this.getLabelsFromDOM();
-        if(this.storage && this.canUIInitialize()){
+        if(this.storage && this.canUIInitialize(updateType)){
             this.isUIInitialized = true;
-            this.layoutManager.initializeUI(this.storage);
+            this.layoutManager.populateUIWithData(updateType, this.storage);
         }
     }
 }

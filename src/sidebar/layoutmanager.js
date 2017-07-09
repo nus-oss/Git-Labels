@@ -19,8 +19,7 @@ var LayoutManager = function() {
 }
 
 LayoutManager.prototype.isInitialized = function() {
-    return (this.storage && this.launchButtonFactory && this.sideBarFactory && this.labelGroupsFactory && 
-                this.selectedLabelsFactory && this.searchFactory);
+    return (this.storage && this.sideBarFactory && this.labelGroupsFactory && this.selectedLabelsFactory && this.searchFactory);
 }
 
 LayoutManager.prototype.generateInstanceID = function() {
@@ -95,50 +94,60 @@ LayoutManager.prototype.replaceElements = function( parentContainer, oldElements
     return true;
 }
 
-LayoutManager.prototype.createSideBarWithContent = function( headerTitleText, instanceID ) {
+LayoutManager.prototype.createSideBarContent = function(headerTitleText, instanceID) {
 
-    if(!this.isInitialized()){
-        return null;
+    var selectedLabels = this.selectedLabelsFactory.create(this.storage);
+    if(!selectedLabels){
+        throw new Error(-1);
     }
 
-    this.selectedLabels = this.selectedLabelsFactory.create(this.storage);
-
-    var sideBar = this.sideBarFactory.create();
-
-    this.sideBarContentContainer = document.createElement("div");
-    this.sideBarContentContainer.classList.add("ui", "fluid", "droptaglistcontainer");
+    var sideBarContentContainer = document.createElement("div");
+    if(!sideBarContentContainer){
+        throw new Error(-1);
+    }
+    sideBarContentContainer.classList.add("ui", "fluid", "droptaglistcontainer");
 
     var sideBarHeader = this.createSideBarHeader(headerTitleText);
-    if(!this.appendUIComponentsToContainer(this.sideBarContentContainer, sideBarHeader)){
-        return null;
+    if(!this.appendUIComponentsToContainer(sideBarContentContainer, sideBarHeader)){
+        throw new Error(-1);
     }
 
-    this.selectedLabelsAndSearchContainer = document.createElement("div");
-    this.selectedLabelsAndSearchContainer.classList.add("tag-container", "ui", "raised", "segment");
+    var selectedLabelsAndSearchContainer = document.createElement("div");
+    if(!selectedLabelsAndSearchContainer){
+        throw new Error(-1);
+    }
+    selectedLabelsAndSearchContainer.classList.add("tag-container", "ui", "raised", "segment");
 
-    if(!this.appendUIComponentsToContainer(this.selectedLabelsAndSearchContainer, this.selectedLabels)){
-        return null;
+    if(!this.appendUIComponentsToContainer(selectedLabelsAndSearchContainer, selectedLabels)){
+        throw new Error(-1);
     }
 
     var searchComponents = this.searchFactory.create(this.storage);
-    if(!this.appendUIComponentsToContainer(this.selectedLabelsAndSearchContainer, searchComponents)){
-        return null;
+    if(!this.appendUIComponentsToContainer(selectedLabelsAndSearchContainer, searchComponents)){
+        throw new Error(-1);
     }
 
-    if(!this.appendUIComponentsToContainer(this.sideBarContentContainer, this.selectedLabelsAndSearchContainer)){
-        return null;
+    if(!this.appendUIComponentsToContainer(sideBarContentContainer, selectedLabelsAndSearchContainer)){
+        throw new Error(-1);
     }
 
-    this.groupLabels = this.labelGroupsFactory.create(this.storage, instanceID);
-    if(!this.appendUIComponentsToContainer(this.sideBarContentContainer, this.groupLabels)){
-        return null;
+    var groupLabels = this.labelGroupsFactory.create(this.storage, instanceID);
+    if(!this.appendUIComponentsToContainer(sideBarContentContainer, groupLabels)){
+        throw new Error(-1);
     }
 
-    if(!this.appendUIComponentsToContainer(sideBar, this.sideBarContentContainer)){
-        return null;
+    if(!this.appendUIComponentsToContainer(this.sideBar, sideBarContentContainer)){
+        throw new Error(-1);
     }
 
-    return sideBar;
+    this.selectedLabels = selectedLabels;
+    this.sideBarContentContainer = sideBarContentContainer;
+    this.selectedLabelsAndSearchContainer = selectedLabelsAndSearchContainer;
+    this.groupLabels = groupLabels;
+}
+
+LayoutManager.prototype.createSideBarContentAsync = async function(headerTitleText, instanceID) {
+    await this.createSideBarContent(headerTitleText, instanceID);
 }
 
 LayoutManager.prototype.toggleSideBar = function() {
@@ -182,11 +191,6 @@ LayoutManager.prototype.wrapBodyInContainer = function() {
     return true;
 }
 
-LayoutManager.prototype.hasUIComponentsForUpdate = function(){
-    return this.selectedLabelsAndSearchContainer != null && this.selectedLabels != null
-            && this.sideBarContentContainer != null && this.groupLabels != null;
-}
-
 LayoutManager.prototype.showSidebar = function(sideBar) {
     sideBar.style.display = "block";
     return true;
@@ -207,51 +211,20 @@ LayoutManager.prototype.hideLaunchButton = function(launchButton) {
     return true;
 }
 
-LayoutManager.prototype.updateUI = function(storage) {
-
-    if(!(storage instanceof ItemStorage) || !this.hasUIComponentsForUpdate()){
-        return false;
-    }
-
-    this.publishUIUpdatedEvent();
-    var instanceID = this.generateInstanceID();
-
-    this.storage = storage;
-
-    var selectedLabels = this.selectedLabelsFactory.create(this.storage);
-    if(this.replaceElements(this.selectedLabelsAndSearchContainer, this.selectedLabels, selectedLabels)){
-        this.selectedLabels = selectedLabels;
-    }
-
-    var groupLabels = this.labelGroupsFactory.create(this.storage, instanceID);
-    if(this.replaceElements(this.sideBarContentContainer, this.groupLabels, groupLabels)){
-        this.groupLabels = groupLabels;
-    }
-
-    this.searchFactory.updateSearchData(this.storage);
-
-    return true;
-}
-
 LayoutManager.prototype.injectSideBarUI = function() {
 
     this.wrapBodyInContainer();
     document.body.classList.add("pushable");
 
-    this.publishUIUpdatedEvent();
-    var instanceID = this.generateInstanceID();
-
-    var sideBar = this.createSideBarWithContent(this.title, instanceID);
-    if(!sideBar) {
+    var sideBar = this.sideBarFactory.create();
+    if(!sideBar){
         return false;
     }
-
     this.sideBar = sideBar;
 
-    document.body.prepend(this.sideBar);
-
-    this.attachListenersToLaunchButton(this.launchButton, this.sideBar);
-    this.sideBarFactory.initializeSideBarState(this.sideBar);
+    document.body.prepend(sideBar);
+    this.attachListenersToLaunchButton(this.launchButton, sideBar);
+    this.sideBarFactory.initializeSideBarState(sideBar);
 
     return true;
 }
@@ -265,16 +238,15 @@ LayoutManager.prototype.injectLaunchButtonUI = function() {
     if(!launchButton) {
         return false;
     }
-
     this.launchButton = launchButton;
 
     if(this.sideBar.nextSibling){
-        document.body.insertBefore(this.launchButton, this.sideBar.nextSibling);
+        document.body.insertBefore(launchButton, this.sideBar.nextSibling);
     } else {
-        document.body.appendChild(this.launchButton);
+        document.body.appendChild(launchButton);
     }
 
-    this.attachListenersToLaunchButton(this.launchButton, this.sideBar);
+    this.attachListenersToLaunchButton(launchButton, this.sideBar);
 
     return true;
 }
@@ -284,11 +256,8 @@ LayoutManager.prototype.injectUI = function() {
     this.wrapBodyInContainer();
     document.body.classList.add("pushable");
 
-    this.publishUIUpdatedEvent();
-    var instanceID = this.generateInstanceID();
-
-    var sideBar = this.createSideBarWithContent(this.title, instanceID);
-    if(!sideBar) {
+    var sideBar = this.sideBarFactory.create();
+    if(!sideBar){
         return false;
     }
     
@@ -297,8 +266,8 @@ LayoutManager.prototype.injectUI = function() {
         return false;
     }
 
-    this.sideBar = sideBar;
     this.launchButton = launchButton;
+    this.sideBar = sideBar;
 
     document.body.prepend(launchButton);
     document.body.prepend(sideBar);
@@ -309,30 +278,94 @@ LayoutManager.prototype.injectUI = function() {
     return true;
 }
 
-LayoutManager.prototype.initializeUI = function(storage) {
-
-    if(!(storage instanceof ItemStorage)){
-        return false;
-    }
-
-    this.storage = storage;
+LayoutManager.prototype.initializeUI = function() {
 
     var hasSideBar = this.sideBar != null && document.body.contains(this.sideBar);
     var hasLaunchButton = this.launchButton != null && document.body.contains(this.launchButton);
 
     if(hasSideBar && hasLaunchButton){
         document.body.classList.add("pushable");
-        this.showSidebar(this.sideBar);
-        this.showLaunchButton(this.launchButton);
-        return this.updateUI(this.storage);
+        if(this.showSidebar(this.sideBar) && this.showLaunchButton(this.launchButton)){
+            return UpdateUIType.UpdateData;
+        }
     } else if ( !hasSideBar && !hasLaunchButton ){
-        return this.injectUI();
+        if(this.injectUI()){
+            return UpdateUIType.CreateAll;
+        }
     } else if (!hasSideBar) {
-        return this.injectSideBarUI() && this.showLaunchButton(this.launchButton);
+        if(this.injectSideBarUI() && this.showLaunchButton(this.launchButton)){
+            return UpdateUIType.CreateAll;
+        }
     } else {
-        this.showSidebar(this.sideBar);
-        return this.injectLaunchButtonUI() && this.updateUI(this.storage);
+        if(this.injectLaunchButtonUI() && this.showSidebar(this.sideBar)){
+            return UpdateUIType.UpdateData;
+        }
     }
+    return UpdateUIType.Error;
+}
+
+LayoutManager.prototype.hasUIComponentsForUpdate = function(){
+    return this.selectedLabelsAndSearchContainer != null && this.selectedLabels != null
+            && this.sideBarContentContainer != null && this.groupLabels != null;
+}
+
+LayoutManager.prototype.updateUIWithData = function(storage) {
+    
+    if(!(storage instanceof ItemStorage) || !this.hasUIComponentsForUpdate()){
+        return false;
+    }
+
+    this.publishUIUpdatedEvent();
+    var instanceID = this.generateInstanceID();
+
+    var selectedLabels = this.selectedLabelsFactory.create(storage);
+    if(!this.replaceElements(this.selectedLabelsAndSearchContainer, this.selectedLabels, selectedLabels)){
+        return false;
+    }
+
+    var groupLabels = this.labelGroupsFactory.create(storage, instanceID);
+    if(!this.replaceElements(this.sideBarContentContainer, this.groupLabels, groupLabels)){
+        return false;
+    }
+
+    this.storage = storage;
+    this.selectedLabels = selectedLabels;
+    this.groupLabels = groupLabels;
+    this.searchFactory.updateSearchData(storage);
+
+    return false;
+}
+
+LayoutManager.prototype.populateSideBarWithContents = function(storage) {
+
+    if(!(storage instanceof ItemStorage) || !this.sideBar || !this.launchButton){
+        return false;
+    }
+    this.storage = storage;
+
+    this.publishUIUpdatedEvent();
+    var instanceID = this.generateInstanceID();
+
+    try{
+        this.createSideBarContentAsync(this.title, instanceID);
+    } catch(error){
+        this.storage = null;
+        console.error(error);
+    }
+
+    return true;
+}
+
+LayoutManager.prototype.populateUIWithData = function(updateUIType, storage) {
+    switch(updateUIType){
+        case UpdateUIType.CreateAll:
+            return this.populateSideBarWithContents(storage);
+        case UpdateUIType.UpdateData:
+            return this.updateUIWithData(storage);
+        default:
+            break;
+    }
+    return false;
 }
 
 LayoutManager.prototype.cleanup = function() {

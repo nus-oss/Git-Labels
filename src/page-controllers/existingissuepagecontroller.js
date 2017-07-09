@@ -98,10 +98,19 @@ ExistingIssuePageController.prototype.handleExternalApplyLabelsEvent = function(
     }
 
     $.post(postInfo.url, data)
-     .done(this.handleSuccessfulPostRequest.bind(this))
-     .fail(this.handleUnsuccessfulPostRequest.bind(this));
+     .done(function(response){this.handleSuccessfulPostRequest(response, UpdateUIType.UpdateData)}.bind(this))
+     .fail(function(){this.handleUnsuccessfulPostRequest(UpdateUIType.UpdateData)}.bind(this));
 
     return true;
+}
+
+ExistingIssuePageController.prototype.handleSuccessfulPostRequest = function(response, updateType) {
+    this.retrieveLabelsFromGETRequest(updateType);
+    this.updatedGitLabelsDisplay(response);
+}
+
+ExistingIssuePageController.prototype.handleUnsuccessfulPostRequest = function(updateType) {
+    this.retrieveLabelsFromGETRequest(updateType);
 }
 
 ExistingIssuePageController.prototype.replaceGitFormData = function(newUTF8Value, newMethodValue, newAuthTokenValue) {
@@ -239,25 +248,10 @@ ExistingIssuePageController.prototype.updatedGitLabelsDisplay = function(respons
     }
 
     $.get(url)
-     .done(function(reply){
-        if(!this.processReplyForSideBar(reply)){
-            this.replaceGitLabelsDisplay(response);
-        }
-     }.bind(this))
-     .fail(function(){
-        this.replaceGitLabelsDisplay(response);
-     }.bind(this));
+     .done(function(reply){if(!this.processReplyForSideBar(reply)){this.replaceGitLabelsDisplay(response);}}.bind(this))
+     .fail(function(){this.replaceGitLabelsDisplay(response);}.bind(this));
 
     return true;
-}
-
-ExistingIssuePageController.prototype.handleSuccessfulPostRequest = function(response) {
-    this.retrieveLabelsFromGETRequest();
-    this.updatedGitLabelsDisplay(response);
-}
-
-ExistingIssuePageController.prototype.handleUnsuccessfulPostRequest = function() {
-    this.retrieveLabelsFromGETRequest();
 }
 
 ExistingIssuePageController.prototype.recoverLabelsInGitDOM = function(data) {
@@ -273,15 +267,23 @@ ExistingIssuePageController.prototype.recoverLabelsInGitDOM = function(data) {
     return true;
 }
 
-ExistingIssuePageController.prototype.processGETResponse = function(data) {
+ExistingIssuePageController.prototype.processGETResponse = function(data, updateType) {
     if(this.layoutManager){
         this.recoverLabelsInGitDOM(data);
         this.storage = this.getLabelsFromDOM();
-        this.layoutManager.initializeUI(this.storage);
+        if(this.storage){
+            this.layoutManager.populateUIWithData(updateType, this.storage);
+        } else {
+            this.cleanUp();
+            this.layoutManager.cleanUp();
+        }
+    } else {
+        this.cleanUp();
+        this.layoutManager.cleanUp();
     }
 }
 
-ExistingIssuePageController.prototype.retrieveLabelsFromGETRequest = function() {
+ExistingIssuePageController.prototype.retrieveLabelsFromGETRequest = function(updateType) {
 
     var urlElement = document.querySelector( ".discussion-sidebar .sidebar-labels div.label-select-menu" );
 
@@ -296,7 +298,7 @@ ExistingIssuePageController.prototype.retrieveLabelsFromGETRequest = function() 
     }
 
     $.get(url)
-     .done(this.processGETResponse.bind(this));
+     .done(function(data){this.processGETResponse(data, updateType)}.bind(this));
 
     return true;
 }
@@ -355,11 +357,12 @@ ExistingIssuePageController.prototype.run = function(layoutManager) {
     if(layoutManager && this.hasPermissionToManageLabels()){
         this.layoutManager = layoutManager;
         this.setupGitDOMListeners();
+        var updateType = this.layoutManager.initializeUI();
         this.storage = this.getLabelsFromDOM();
         if(!this.storage){
-            this.retrieveLabelsFromGETRequest();
+            this.retrieveLabelsFromGETRequest(updateType);
         } else {
-            this.layoutManager.initializeUI(this.storage);
+            this.layoutManager.populateUIWithData(updateType, this.storage);
         }
     }
 }
@@ -455,5 +458,5 @@ ExistingIssuePageController.prototype.updateUI = function(mutation) {
             return true;
         }
     }
-    return this.retrieveLabelsFromGETRequest();
+    return this.retrieveLabelsFromGETRequest(UpdateUIType.UpdateData);
 }

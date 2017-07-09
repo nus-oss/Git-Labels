@@ -102,7 +102,7 @@ NewIssuePageController.prototype.handleFailedPostRequest = function() {
 NewIssuePageController.prototype.handleAfterPostRequest = function() {
     if(this.layoutManager){
         this.storage = this.getLabelsFromDOM();
-        this.layoutManager.updateUI(this.storage);
+        this.layoutManager.updateUIWithData(this.storage);
     }
 }
 
@@ -176,9 +176,12 @@ NewIssuePageController.prototype.run = function(layoutManager) {
     if(layoutManager && this.hasPermissionToManageLabels()){
         this.layoutManager = layoutManager;
         this.setupPageListeners();
+        var updateType = this.layoutManager.initializeUI();
         this.storage = this.getLabelsFromDOM();
         if(this.storage){
-            this.layoutManager.initializeUI(this.storage);
+            this.layoutManager.populateUIWithData(updateType, this.storage);
+        } else {
+            this.layoutManager.cleanup();
         }
     }
 }
