@@ -28,7 +28,7 @@
       "matches": ["https://github.com/*", 
                   "http://github.com/*" ],
 
-      "css": ["libs/semantic/semantic.offline.css",
+      "css": ["libs/semantic/semantic.offline.min.css",
               "libs/colorpicker/spectrum.min.css",
               "src/styles/colorpicker.css",
               "src/styles/labelui.css" ],
@@ -38,10 +38,10 @@
 
               // Libaries used
               "libs/jquery/jquery-3.2.1.min.js",
-              "libs/semantic/semantic.js",
+              "libs/semantic/semantic.min.js",
               "libs/colorpicker/spectrum.min.js",
-              "libs/scrollintoview/jquery.scrollintoview.mod.js",
-              "libs/pubsubjs/pubsub.js",
+              "libs/scrollintoview/jquery.scrollintoview.mod.min.js",
+              "libs/pubsubjs/pubsub.min.js",
 
               // Utility and constants used throughout the extensions
               "src/globals/constants.js",
