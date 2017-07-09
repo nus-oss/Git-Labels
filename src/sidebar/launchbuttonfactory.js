@@ -53,14 +53,24 @@ LaunchButtonFactory.prototype.attachListenersToLaunchButton = function(innerCont
     var $buttonIcon = $(buttonIcon)
     var $buttonText = $(buttonText);
 
-    var originalWidth = 0;
+    var originalWidth;
+    var innerContainerWidth;
+    var buttonTextWidth;
 
     $innerContainer.mouseenter(function() {
 
-        originalWidth = $innerContainer.outerWidth(true);
+        if(originalWidth === undefined){
+            originalWidth = $innerContainer.outerWidth(true);
+        }
+        if(innerContainerWidth === undefined) {
+            innerContainerWidth = $innerContainer.outerWidth();
+        }
+        if(buttonTextWidth === undefined){
+            buttonTextWidth = $buttonText.outerWidth();
+        }
 
         $innerContainer.stop().animate({
-            width: 1.5*($innerContainer.outerWidth()+$buttonText.outerWidth())
+            width: 1.5*(innerContainerWidth+buttonTextWidth)
         }, 150, function() {
             $buttonText.show();
         });
