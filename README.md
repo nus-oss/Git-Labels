@@ -64,6 +64,8 @@ The full git repository is at: <https://github.com/GitHubExtensions/Git-Labels> 
 
    ![](readme-resources/images/verify-install.png)
 
+***
+
 #### [**Option 2: From source**](#option-2-from-source)
 
 1. **Download Git Labels**
