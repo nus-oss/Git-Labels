@@ -28,6 +28,44 @@ The full git repository is at: <https://github.com/GitHubExtensions/Git-Labels> 
 
 ### Installation
 
+#### Option 1: Using packed google chrome extension
+
+1. **Download Git Labels**
+
+    Download a [copy](#download) of the project onto your local machine and unzip its contents. Ensure that the root structure of your folder is as shown below:
+
+    ![step one](readme-resources/images/installation-step-one.png)
+    
+2. **Locate the Git-Labels.crx file**
+
+   Navigate into the /bin/ directory from the root structure of your folder and locate the **Git-Labels.crx** file as shown below:
+
+   ![]()
+
+3. **Navigate to Chrome Extensions**
+
+   Navigate to [chrome://extensions/](chrome://extensions/) in Google Chrome
+   
+4. **Install Git-Labels packed extension**
+
+   In order to install the packed extension, drag and drop the **Git-Labels.crx** file in the Chrome Extensions page as shown below:
+   
+   ![]()
+   
+5. **Confirm installation**
+
+   To confirm the installation of the extension, click on the Add extension button as shown below :
+   
+   ![]()
+   
+6. **Verify installation**
+
+   Ensure that after installing the extension, your Google Chrome extension page has an entry for Git Labels as shown below:
+
+   ![]()
+
+#### Option 2: From source
+
 1. **Download Git Labels**
 
     Download a [copy](#download) of the project onto your local machine and unzip its contents. Ensure that the root structure of your folder is as shown below:
