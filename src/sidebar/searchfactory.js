@@ -37,19 +37,26 @@ var SearchFactory = function() {
     /*  Events subscribed
 
         PubSub.subscribe("selected-label/toggle-select-item-finished", this.handleApplyEvent.bind(this));
+        PubSub.subscribe("side-bar-ui/hidden", this.handleSideBarHiddenEvent.bind(this));
+        PubSub.subscribe("side-bar-ui/visible", this.handleSideBarVisibleEvent.bind(this));
     */
 }
 
 SearchFactory.prototype.handleSideBarVisibleEvent = function() {
-    setTimeout(function() {
-        if(this.searchInput){
-            this.searchInput.focus();
-        }
-    }.bind(this), 20);
+    if(this.searchInput){
+        this.searchInput.focus();
+    }
+}
+
+SearchFactory.prototype.handleSideBarHiddenEvent = function() {
+    if(this.searchInput){
+        this.searchInput.blur();
+    }
 }
 
 SearchFactory.prototype.subscribeToExternalEvents = function() {
     PubSub.subscribe("side-bar-ui/visible", this.handleSideBarVisibleEvent.bind(this));
+    PubSub.subscribe("side-bar-ui/hidden", this.handleSideBarHiddenEvent.bind(this));
     PubSub.subscribe("selected-label/toggle-select-item-finished", this.handleApplyEvent.bind(this));
 }
 
@@ -188,6 +195,7 @@ SearchFactory.prototype.handleFocusOffEvent = function() {
 }
 
 SearchFactory.prototype.handleApplyEvent = function() {
+    this.handleSideBarHiddenEvent();
     PubSub.publish("search-bar/apply-selected-labels", {} );
     this.clearSearchInput();
     return false;
@@ -369,6 +377,7 @@ SearchFactory.prototype.handleEscKeyEvent = function() {
     if(this.searchMenuList && this.isSearchMenuListShown(this.searchMenuList)){
         this.styleSearchListToHide(this.searchMenuList);
     } else {
+        this.handleSideBarHiddenEvent();
         PubSub.publish("search-bar/escape-key-triggered");
     }
     return true;
@@ -792,5 +801,9 @@ SearchFactory.prototype.clearSearchInput = function() {
 }
 
 SearchFactory.prototype.cleanup = function() {
-    this.clearSearchInput();
+    this.originalInput = "";
+    if(this.searchInput){
+        this.searchInput.blur();
+        this.searchInput.value = "";
+    }
 }

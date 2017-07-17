@@ -154,19 +154,22 @@ LayoutManager.prototype.toggleSideBar = function() {
     if(this.sideBar){
         var $sideBar = $(this.sideBar);
         if(!$sideBar.sidebar("is visible")){
-            PubSub.publish("side-bar-ui/visible", {});
+            PubSub.publishSync("side-bar-ui/visible", {});
+        } else {
+            PubSub.publishSync("side-bar-ui/hidden", {});
         }
         $sideBar.sidebar("toggle");
     }
 }
 
 LayoutManager.prototype.attachListenersToLaunchButton = function(launchButton, sideBar) {
-    
+
     var $sideBar = $(sideBar);
-    
     $(launchButton).click(function() {
         if(!$sideBar.sidebar("is visible")){
-            PubSub.publish("side-bar-ui/visible", {});
+            PubSub.publishSync("side-bar-ui/visible", {});
+        } else {
+            PubSub.publishSync("side-bar-ui/hidden", {});
         }
         $sideBar.sidebar("toggle");
     });
