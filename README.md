@@ -28,27 +28,67 @@ The full git repository is at: <https://github.com/GitHubExtensions/Git-Labels> 
 
 ### Installation
 
+#### [**Option 1: Using packed google chrome extension**](#option-1-using-packed-google-chrome-extension)
+
 1. **Download Git Labels**
 
     Download a [copy](#download) of the project onto your local machine and unzip its contents. Ensure that the root structure of your folder is as shown below:
 
-    ![step one](readme-resources/images/installation-step-one.png)
+    ![](readme-resources/images/installation-step-one.png)
+    
+2. **Locate the Git-Labels.crx file**
+
+   Navigate into the /bin/ directory from the root structure of your folder and locate the **Git-Labels.crx** file as shown below:
+
+   ![](readme-resources/images/packed-extension-location.png)
+
+3. **Navigate to Chrome Extensions**
+
+   Navigate to `chrome://extensions/` in Google Chrome
+   
+4. **Install Git-Labels packed extension**
+
+   In order to install the packed extension, drag and drop the **Git-Labels.crx** file in the Chrome Extensions page as shown below:
+   
+   ![](readme-resources/images/drag-and-drop-install.png)
+   
+5. **Confirm installation**
+
+   To confirm the installation of the extension, click on the Add extension button as shown below :
+   
+   ![](readme-resources/images/confirm-install.png)
+   
+6. **Verify installation**
+
+   Ensure that after installing the extension, your Google Chrome extension page has an entry for Git Labels as shown below:
+
+   ![](readme-resources/images/verify-install.png)
+
+***
+
+#### [**Option 2: From source**](#option-2-from-source)
+
+1. **Download Git Labels**
+
+    Download a [copy](#download) of the project onto your local machine and unzip its contents. Ensure that the root structure of your folder is as shown below:
+
+    ![](readme-resources/images/installation-step-one.png)
 
 2. **Navigate to Chrome Extensions**
 
-    Navigate to [chrome://extensions/](chrome://extensions/) in Google Chrome
+    Navigate to `chrome://extensions/` in Google Chrome
 
 3. **Enable Developer Mode**
 
     Tick on the checkbox with the words "Developer mode" on its right
 
-    ![step three](readme-resources/images/installation-step-three.png)
+    ![](readme-resources/images/installation-step-three.png)
 
 4. **Load unpacked extension**
 
     Click on the "Load unpacked extension..." button and select the folder containing the project. Ensure that after loading the extension, your Google Chrome extension page has an entry for Git Labels as shown below:
 
-    ![step four](readme-resources/images/installation-step-four.png)
+    ![](readme-resources/images/installation-step-four.png)
     
 ## Features
 1. **Integrated into the page**
