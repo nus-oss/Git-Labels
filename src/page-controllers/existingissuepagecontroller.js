@@ -413,9 +413,12 @@ ExistingIssuePageController.prototype.setupGitDOMListeners = function() {
 
 ExistingIssuePageController.prototype.getFirstMatchedElementFromNodeList = function(nodeList, classNameQuery) {
     for(var i = 0; i < nodeList.length; ++i){
-        var elements = nodeList[i].getElementsByClassName(classNameQuery);
-        if(elements.length > 0){
-            return elements[0];
+        var node = nodeList[i];
+        if(node && typeof(node.getElementsByClassName) === "function"){
+            var elements = node.getElementsByClassName(classNameQuery);
+            if(elements.length > 0){
+                return elements[0];
+            }
         }
     }
     return null;
