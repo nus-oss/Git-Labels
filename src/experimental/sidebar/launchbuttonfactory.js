@@ -31,7 +31,7 @@ LaunchButtonFactory.prototype.createLaunchButton = function( buttonText, isCache
     innerContainer.appendChild(buttonTextElement);
 
     var buttonIcon = document.createElement("i");
-    buttonIcon.classList.add("tag", "icon");
+    buttonIcon.classList.add("large", "tag", "icon");
     innerContainer.appendChild(buttonIcon);
 
     outerContainer.appendChild(innerContainer);
@@ -76,6 +76,10 @@ LaunchButtonFactory.prototype.attachListenersToLaunchButton = function(innerCont
         });
 
     }).mouseleave(function(){
+
+        if(originalWidth === undefined){
+            originalWidth = $innerContainer.outerWidth(true);
+        }
 
         $buttonText.hide();
         $innerContainer.stop().animate({width: originalWidth}, 150);

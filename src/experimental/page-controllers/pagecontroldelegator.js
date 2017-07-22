@@ -23,6 +23,7 @@ var PageControlDelegator = function() {
 PageControlDelegator.prototype.cleanup = function() {
     this.docObserver = null;
     this.runType = null;
+    this.isSafeParams = null;
     this.issuePageController.cleanup();
 }
 
@@ -54,13 +55,14 @@ PageControlDelegator.prototype.getRunType = function() {
     return RunType.NONE;
 }
 
-PageControlDelegator.prototype.isSafeToRun = function(runType) {
+PageControlDelegator.prototype.isSafeToRun = function(runType, isSafeParams) {
     switch(runType){
         case RunType.NEW_ISSUE:
         case RunType.NEW_PULL_REQUEST:
+            return this.issuePageController.isSafeToRunOnNewLabelsPage(isSafeParams);
         case RunType.EXISTING_ISSUE:
         case RunType.EXISTING_PULL_REQUEST:
-            return this.issuePageController.isSafeToRun();
+            return this.issuePageController.isSafeToRunOnExistingLabelsPage(isSafeParams);
         default:
             break;
     }
@@ -91,9 +93,13 @@ PageControlDelegator.prototype.stopDocObserver = function() {
 
         this.docObserver.disconnect();
         this.docObserver = null;
+        this.isSafeParams = null;
 
-        var runType = this.getRunType();
-        this.runPageController(runType, true);
+        if(this.runType === null){
+            this.runType = this.getRunType();
+        }
+        this.runPageController(this.runType, true);
+        this.runType = null;
     }
 }
 
@@ -107,7 +113,7 @@ PageControlDelegator.prototype.processBody = function() {
         this.runType = this.getRunType();
     }
 
-    if(!this.isSafeToRun(this.runType)){
+    if(!this.isSafeToRun(this.runType, this.isSafeParams)){
         return false;
     }
 
@@ -117,6 +123,10 @@ PageControlDelegator.prototype.processBody = function() {
     }
 
     this.runPageController(this.runType, false);
+
+    this.isSafeParams = null;
+    this.runType = null;
+
     return true;
 }
 
@@ -124,6 +134,7 @@ PageControlDelegator.prototype.waitForBody = function() {
 
     this.docObserver = null;
     this.runType = null;
+    this.isSafeParams = {};
 
     if(!this.processBody()){
         this.docObserver = new MutationObserver(this.processBody.bind(this));

@@ -10,7 +10,6 @@ var IssuePageController = function() {
     this.existingPageController = new ExistingIssuePageController();
     this.newPageController = new NewIssuePageController();
     this.subscribeToExternalEvents();
-    // this.applySelectedLabelsEventToken
 }
 
 IssuePageController.prototype.stopBodyObserver = function() {
@@ -20,11 +19,15 @@ IssuePageController.prototype.stopBodyObserver = function() {
     }
 }
 
-IssuePageController.prototype.runBasedOnPageType = function() {
+IssuePageController.prototype.runBasedOnPageType = function(isDelayedRun) {
     
     switch(this.issuePageType){
         case IssuePageType.NEW:
-            this.newPageController.run(this.layoutManager);
+            if(isDelayedRun){
+                this.newPageController.run(this.layoutManager);
+            } else {
+                this.newPageController.runBeforeDocumentEnd(this.layoutManager);
+            }
             break;
         case IssuePageType.EXISTING:
             this.existingPageController.run(this.layoutManager);
@@ -50,7 +53,7 @@ IssuePageController.prototype.runWithoutPusher = function() {
     document.addEventListener('DOMContentLoaded', this.stopBodyObserver.bind(this));
 
     processBodyMutations();
-    this.runBasedOnPageType();
+    this.runBasedOnPageType(false);
     
     function processBodyMutations() {
         var children = document.body.children;
@@ -77,7 +80,7 @@ IssuePageController.prototype.run = function() {
     this.bodyObserver = null;
     
     if(document.body.querySelector(".pusher")){
-        this.runBasedOnPageType();
+        this.runBasedOnPageType(false);
     } else {
         this.runWithoutPusher();
     }
@@ -97,10 +100,7 @@ IssuePageController.prototype.handleExternalApplyLabelsEvents = function() {
 }
 
 IssuePageController.prototype.subscribeToExternalEvents = function() {
-
-    //$.subscribe("search-bar/apply-selected-labels", this.handleExternalApplyLabelsEvent.bind(this));
-    this.applySelectedLabelsEventToken = PubSub.subscribe("search-bar/apply-selected-labels",               
-                                                            this.handleExternalApplyLabelsEvents.bind(this));
+    PubSub.subscribe("search-bar/apply-selected-labels", this.handleExternalApplyLabelsEvents.bind(this));
 }
 
 IssuePageController.prototype.cleanup = function() {
@@ -110,14 +110,18 @@ IssuePageController.prototype.cleanup = function() {
     this.stopBodyObserver();
 }
 
-IssuePageController.prototype.isSafeToRun = function() {
-    return document.body.querySelector(".sidebar-labels .select-menu-modal") != null;
+IssuePageController.prototype.isSafeToRunOnNewLabelsPage = function(isSafeParams) {
+    return this.newPageController.isSafeToRun(isSafeParams);
+}
+
+IssuePageController.prototype.isSafeToRunOnExistingLabelsPage = function(isSafeParams) {
+    return this.existingPageController.isSafeToRun(isSafeParams);
 }
 
 IssuePageController.prototype.runOnNewLabelsPage = function(isRunNow) {
     this.issuePageType = IssuePageType.NEW;
     if(isRunNow){
-        this.runBasedOnPageType();
+        this.runBasedOnPageType(true);
     } else {
         this.run();
     }
@@ -126,7 +130,7 @@ IssuePageController.prototype.runOnNewLabelsPage = function(isRunNow) {
 IssuePageController.prototype.runOnExistingLabelsPage = function(isRunNow) {
     this.issuePageType = IssuePageType.EXISTING;
     if(isRunNow){
-        this.runBasedOnPageType();
+        this.runBasedOnPageType(true);
     } else {
         this.run();
     }

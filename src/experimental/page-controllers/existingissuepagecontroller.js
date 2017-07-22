@@ -196,29 +196,29 @@ ExistingIssuePageController.prototype.replaceGitLabelsDisplay = function(labelSi
         return false;
     }
 
-    var $labelSideBarItem = $(labelSideBarItem);
-    var $newLabelsDisplay = null;
-
     try{
+
+        var $labelSideBarItem = $("<div></div>").append($.parseHTML(labelSideBarItem));
+
+        this.updateGitFormData($labelSideBarItem);
+
         $newLabelsDisplay = $labelSideBarItem.find(this.GitSelectedLabelExactLocation);
-    } catch(exception){
-        return false;
-    }
+        if($newLabelsDisplay.length <= 0){
+            return false;
+        }
 
-    this.updateGitFormData($labelSideBarItem);
+        var oldLabelsDisplay = document.body.querySelector(this.GitSelectedLabelsLocation);
+        if(!oldLabelsDisplay){
+            return false;
+        }
 
-    if($newLabelsDisplay.length <= 0){
-        return false;
-    }
+        $(oldLabelsDisplay).replaceWith($newLabelsDisplay);
 
-    var oldLabelsDisplay = document.body.querySelector(this.GitSelectedLabelsLocation);
-    if(!oldLabelsDisplay){
-        return false;
-    }
+        return true;
 
-    $(oldLabelsDisplay).replaceWith($newLabelsDisplay);
+    } catch(exception){}
 
-    return true;
+    return false;
 }
 
 ExistingIssuePageController.prototype.processReplyForSideBar = function(reply) {
@@ -227,29 +227,28 @@ ExistingIssuePageController.prototype.processReplyForSideBar = function(reply) {
         return false;
     }
 
-    var $reply = $(reply);
-    var $newLabelsDisplay = null;
-
     try{
-        $newLabelsDisplay = $(reply).find(this.GitSelectedLabelsLocation); 
-    } catch(exception) {
-        return false;
-    }
 
-    this.updateGitFormData($reply);
+        var $reply = $("<div></div>").append($.parseHTML(reply));
 
-    if($newLabelsDisplay.length <= 0){
-        return false;
-    }
+        this.updateGitFormData($reply);
 
-    var oldLabelsDisplay = document.body.querySelector(this.GitSelectedLabelsLocation);
-    if(!oldLabelsDisplay){
-        return false;
-    }
+        var $newLabelsDisplay = $reply.find(this.GitSelectedLabelsLocation); 
+        if($newLabelsDisplay.length <= 0){
+            return false;
+        }
 
-    $(oldLabelsDisplay).replaceWith($newLabelsDisplay);
+        var oldLabelsDisplay = document.body.querySelector(this.GitSelectedLabelsLocation);
+        if(!oldLabelsDisplay){
+            return false;
+        }
 
-    return true;
+        $(oldLabelsDisplay).replaceWith($newLabelsDisplay);
+        return true;
+
+    } catch(exception) {}
+
+    return false;
 }
 
 ExistingIssuePageController.prototype.updatedGitLabelsDisplay = function(response) {
@@ -279,43 +278,43 @@ ExistingIssuePageController.prototype.onUpdatedGitlabelDisplayResponse = functio
         return false;
     }
 
-    var $reply = $(reply);
-    var $newLabelsDisplay = null;
-
     try{
-        $newLabelsDisplay = $(reply).find(this.GitSelectedLabelsLocation); 
-    } catch(exception) {
-        return false;
-    }
 
-    this.updateGitFormData($reply);
+        var $reply = $("<div></div>").append($.parseHTML(reply));
 
-    if($newLabelsDisplay.length <= 0){
-        return false;
-    }
+        this.updateGitFormData($reply);
 
-    var oldLabelsDisplay = document.body.querySelector(this.GitSelectedLabelsLocation);
-    if(!oldLabelsDisplay){
-        return false;
-    }
+        var $newLabelsDisplay = $reply.find(this.GitSelectedLabelsLocation); 
+        if($newLabelsDisplay.length <= 0){
+            return false;
+        }
 
-    var oldLabels = oldLabelsDisplay.getElementsByClassName(this.GitSelectedLabelsClassName);
-    var newLabels = $newLabelsDisplay[0].getElementsByClassName(this.GitSelectedLabelsClassName);
+        var oldLabelsDisplay = document.body.querySelector(this.GitSelectedLabelsLocation);
+        if(!oldLabelsDisplay){
+            return false;
+        }
 
-    if( oldLabels.length === newLabels.length ) {
-        var isSame = true;
-        for(var i = 0; i < oldLabels.length; ++i){
-            if(oldLabels[i].textContent !== newLabels[i].textContent){
-                isSame = false;
-                break;
+        var oldLabels = oldLabelsDisplay.getElementsByClassName(this.GitSelectedLabelsClassName);
+        var newLabels = $newLabelsDisplay[0].getElementsByClassName(this.GitSelectedLabelsClassName);
+
+        if( oldLabels.length === newLabels.length ) {
+            var isSame = true;
+            for(var i = 0; i < oldLabels.length; ++i){
+                if(oldLabels[i].textContent !== newLabels[i].textContent){
+                    isSame = false;
+                    break;
+                }
+            }
+            if(isSame){
+                return true;
             }
         }
-        if(isSame){
-            return true;
-        }
-    }
-    $(oldLabelsDisplay).replaceWith($newLabelsDisplay);
-    return true;
+        $(oldLabelsDisplay).replaceWith($newLabelsDisplay);
+        return true;
+
+    } catch(exception) {}
+
+    return false;
 }
 
 ExistingIssuePageController.prototype.refreshGitLabelDisplay = function() {
@@ -472,6 +471,33 @@ ExistingIssuePageController.prototype.getLabelsFromDOM = function() {
 
 ExistingIssuePageController.prototype.hasPermissionToManageLabels = function() {
     return document.body.querySelector(this.GitLabelModalBoxLocation) != null;
+}
+
+ExistingIssuePageController.prototype.isSafeToRun = function(isSafeParams) {
+    if(isSafeParams){
+        if(!isSafeParams.a && document.getElementById(this.sideBarId)){
+            isSafeParams.a = true;
+        }
+        if(!isSafeParams.b && document.querySelector(this.RetrieveGitLabelUrlLocation)){
+            isSafeParams.b = true;
+        }
+        if(!isSafeParams.c && document.querySelector(this.GitLabelModalBoxLocation)){
+            isSafeParams.c = true;
+        }
+        if(!isSafeParams.d && document.querySelector(this.GitLabelModalBoxButtonLocation)){
+            isSafeParams.d = true;
+        }
+        if(!isSafeParams.e && document.querySelector(this.sideBarLocation)){
+            isSafeParams.e = true;
+        }
+        return isSafeParams.a && isSafeParams.b && isSafeParams.c && isSafeParams.d && isSafeParams.e;
+    } else {
+        return document.getElementById(this.sideBarId) 
+                && document.querySelector(this.RetrieveGitLabelUrlLocation)
+                && document.querySelector(this.GitLabelModalBoxLocation)
+                && document.querySelector(this.GitLabelModalBoxButtonLocation)
+                && document.querySelector(this.sideBarLocation);
+    }
 }
 
 ExistingIssuePageController.prototype.run = function(layoutManager) {
