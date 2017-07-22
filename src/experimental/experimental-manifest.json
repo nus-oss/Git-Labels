@@ -57,7 +57,6 @@
               // Page Controllers
               "src/experimental/page-controllers/existingissuepagecontroller.js",
               "src/experimental/page-controllers/newissuepagecontroller.js",
-              "src/experimental/page-controllers/newpullrequestpagecontroller.js",
               "src/experimental/page-controllers/issuepagecontroller.js",
               "src/experimental/page-controllers/labelpagecontroller.js",
 

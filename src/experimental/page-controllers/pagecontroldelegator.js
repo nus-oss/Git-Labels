@@ -71,10 +71,8 @@ PageControlDelegator.prototype.runPageController = function(runType, isRunNow) {
 
     switch(runType){
         case RunType.NEW_ISSUE:
-            this.issuePageController.runOnNewLabelsPage(isRunNow);
-            return true;
         case RunType.NEW_PULL_REQUEST:
-            this.issuePageController.runOnNewPullRequestPage(isRunNow);
+            this.issuePageController.runOnNewLabelsPage(isRunNow);
             return true;
         case RunType.EXISTING_ISSUE:
         case RunType.EXISTING_PULL_REQUEST:

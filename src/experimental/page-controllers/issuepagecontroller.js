@@ -1,7 +1,6 @@
 var IssuePageType = {
     NEW: 0,
     EXISTING: 1,
-    NEW_PULL_REQUEST: 2,
     NONE: 4
 }
 
@@ -10,7 +9,6 @@ var IssuePageController = function() {
     this.layoutManager = new LayoutManager();
     this.existingPageController = new ExistingIssuePageController();
     this.newPageController = new NewIssuePageController();
-    this.newRequestPageController = new NewPullRequestPageController();
     this.subscribeToExternalEvents();
     // this.applySelectedLabelsEventToken
 }
@@ -30,9 +28,6 @@ IssuePageController.prototype.runBasedOnPageType = function() {
             break;
         case IssuePageType.EXISTING:
             this.existingPageController.run(this.layoutManager);
-            break;
-        case IssuePageType.NEW_PULL_REQUEST:
-            this.newRequestPageController.run(this.layoutManager);
             break;
         default:
             break;
@@ -96,8 +91,6 @@ IssuePageController.prototype.handleExternalApplyLabelsEvents = function() {
             return this.newPageController.handleExternalApplyLabelsEvent();
         case IssuePageType.EXISTING:
             return this.existingPageController.handleExternalApplyLabelsEvent();
-        case IssuePageType.NEW_PULL_REQUEST:
-            return this.newRequestPageController.handleExternalApplyLabelsEvent();
         default:
             break;
     }
@@ -132,15 +125,6 @@ IssuePageController.prototype.runOnNewLabelsPage = function(isRunNow) {
 
 IssuePageController.prototype.runOnExistingLabelsPage = function(isRunNow) {
     this.issuePageType = IssuePageType.EXISTING;
-    if(isRunNow){
-        this.runBasedOnPageType();
-    } else {
-        this.run();
-    }
-}
-
-IssuePageController.prototype.runOnNewPullRequestPage = function(isRunNow) {
-    this.issuePageType = IssuePageType.NEW_PULL_REQUEST;
     if(isRunNow){
         this.runBasedOnPageType();
     } else {
