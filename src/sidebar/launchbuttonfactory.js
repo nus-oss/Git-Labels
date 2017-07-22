@@ -31,7 +31,7 @@ LaunchButtonFactory.prototype.createLaunchButton = function( buttonText, isCache
     innerContainer.appendChild(buttonTextElement);
 
     var buttonIcon = document.createElement("i");
-    buttonIcon.classList.add("content", "icon");
+    buttonIcon.classList.add("tag", "icon");
     innerContainer.appendChild(buttonIcon);
 
     outerContainer.appendChild(innerContainer);

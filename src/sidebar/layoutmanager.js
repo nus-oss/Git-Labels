@@ -41,7 +41,7 @@ LayoutManager.prototype.createSideBarHeader = function( headerTitleText ) {
     sideBarHeader.classList.add("tag-container-header", "ui", "horizontal", "divider", "header");
 
     var sidebarHeaderIcon = document.createElement("i");
-    sidebarHeaderIcon.classList.add("github", "icon");
+    sidebarHeaderIcon.classList.add("horizontally", "flipped", "tag", "icon");
     sideBarHeader.appendChild(sidebarHeaderIcon);
 
     var sidebarHeaderText = document.createElement("div");
