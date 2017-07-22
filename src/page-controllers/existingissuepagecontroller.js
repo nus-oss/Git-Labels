@@ -273,14 +273,12 @@ ExistingIssuePageController.prototype.processGETResponse = function(data, update
         this.storage = this.getLabelsFromDOM();
         if(this.storage){
             this.layoutManager.populateUIWithData(updateType, this.storage);
-        } else {
-            this.cleanUp();
-            this.layoutManager.cleanUp();
+            return true;
         }
-    } else {
-        this.cleanUp();
-        this.layoutManager.cleanUp();
     }
+    this.cleanUp();
+    this.layoutManager.cleanUp();
+    return false;
 }
 
 ExistingIssuePageController.prototype.retrieveLabelsFromGETRequest = function(updateType) {
