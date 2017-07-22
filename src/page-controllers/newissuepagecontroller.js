@@ -1,8 +1,12 @@
 var NewIssuePageController = function() {
-    this.GitLabelListQuery = ".sidebar-labels .select-menu-modal";
+    this.GitLabelModalBoxLocation = ".sidebar-labels .select-menu-modal";
     this.GitLabelsPostDataQueryString = ".discussion-sidebar-item.sidebar-labels .js-issue-sidebar-form";
     this.GitLabelsReplaceElementQueryString = ".discussion-sidebar-item.sidebar-labels.js-discussion-sidebar-item";
-    this.GitLabelsQueryString = ".sidebar-labels .select-menu-modal-holder .select-menu-list .select-menu-item";
+    this.GitLabelModalBoxButtonLocation = ".sidebar-labels .label-select-menu button.discussion-sidebar-toggle";
+    this.GitLabelModalBoxButtonTriggerClass = "js-menu-target";
+    this.GitLabelFormName = "issue[labels][]";
+    this.GitLabelListLocation = ".sidebar-labels .select-menu-modal-holder .select-menu-list";
+    this.GitLabelListItemClassName = "select-menu-item";
     /*
         this.storage,
         this.layoutManager
@@ -13,7 +17,7 @@ NewIssuePageController.prototype.getDataForPOSTRequest = function() {
 
     var dataEle = document.querySelector(this.GitLabelsPostDataQueryString);
 
-    if(!dataEle || dataEle.length <= 0){
+    if(!dataEle){
         return null;
     }
 
@@ -44,7 +48,7 @@ NewIssuePageController.prototype.handleExternalApplyLabelsEvent = function() {
         return false;
     }
 
-    var data = encodeURIComponent("issue[labels][]") + "=";
+    var data = encodeURIComponent(this.GitLabelFormName) + "=";
 
     var selectedItemIDsIter = this.storage.getSelectedItemIDsIterator();
     while(true){
@@ -62,12 +66,10 @@ NewIssuePageController.prototype.handleExternalApplyLabelsEvent = function() {
             continue;
         }
 
-        data += ("&" + encodeURIComponent("issue[labels][]") + "=" + encodeURIComponent((item.getFullName())));
+        data += ("&" + encodeURIComponent(this.GitLabelFormName) + "=" + encodeURIComponent((item.getFullName())));
     }
-
     data += ("&" + encodeURIComponent("authenticity_token") + "=" + encodeURIComponent(postInfo.token));
 
-    
     $.post(postInfo.url, data)
      .done(this.handleSuccessfulPostRequest.bind(this))
      .fail(this.handleFailedPostRequest.bind(this))
@@ -78,7 +80,7 @@ NewIssuePageController.prototype.handleExternalApplyLabelsEvent = function() {
 
 NewIssuePageController.prototype.handleSuccessfulPostRequest = function(data) {
 
-    if(!data || typeof data !== "string"){
+    if(typeof(data) !== "string"){
         return false;
     }
 
@@ -108,9 +110,15 @@ NewIssuePageController.prototype.handleAfterPostRequest = function() {
 
 NewIssuePageController.prototype.getLabelsFromDOM = function() {
 
-    var labels = document.querySelectorAll(this.GitLabelsQueryString);
+    var list = document.querySelector(this.GitLabelListLocation);
 
-    if(!labels){
+    if(!list){
+        return null;
+    }
+    
+    var labels = list.getElementsByClassName(this.GitLabelListItemClassName);
+
+    if(labels.length <= 0){
         return null;
     }
 
@@ -148,7 +156,7 @@ NewIssuePageController.prototype.getLabelsFromDOM = function() {
 }
 
 NewIssuePageController.prototype.hasPermissionToManageLabels = function() {
-    return document.body.querySelector(this.GitLabelListQuery) != null;
+    return document.body.querySelector(this.GitLabelModalBoxLocation) != null;
 }
 
 NewIssuePageController.prototype.handleClickEvent = function() {
@@ -159,10 +167,10 @@ NewIssuePageController.prototype.handleClickEvent = function() {
 
 NewIssuePageController.prototype.overrideLabelModalButtonListeners = function() {
     
-    var labelModalButton = document.body.querySelector(".sidebar-labels .label-select-menu button.discussion-sidebar-toggle");
+    var labelModalButton = document.body.querySelector(this.GitLabelModalBoxButtonLocation);
     
     if(labelModalButton){
-        labelModalButton.classList.remove("js-menu-target");
+        labelModalButton.classList.remove(this.GitLabelModalBoxButtonTriggerClass);
         labelModalButton.removeEventListener("click", this.handleClickEvent.bind(this), true);
         labelModalButton.addEventListener("click", this.handleClickEvent.bind(this), true);
     }
