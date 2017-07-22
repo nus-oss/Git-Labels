@@ -98,19 +98,19 @@ ExistingIssuePageController.prototype.handleExternalApplyLabelsEvent = function(
     }
 
     $.post(postInfo.url, data)
-     .done(function(response){this.handleSuccessfulPostRequest(response, UpdateUIType.UpdateData)}.bind(this))
-     .fail(function(){this.handleUnsuccessfulPostRequest(UpdateUIType.UpdateData)}.bind(this));
+     .done(this.handleSuccessfulPostRequest.bind(this))
+     .fail(this.handleUnsuccessfulPostRequest.bind(this));
 
     return true;
 }
 
-ExistingIssuePageController.prototype.handleSuccessfulPostRequest = function(response, updateType) {
-    this.retrieveLabelsFromGETRequest(updateType);
+ExistingIssuePageController.prototype.handleSuccessfulPostRequest = function(response) {
+    this.retrieveLabelsFromGETRequest();
     this.updatedGitLabelsDisplay(response);
 }
 
-ExistingIssuePageController.prototype.handleUnsuccessfulPostRequest = function(updateType) {
-    this.retrieveLabelsFromGETRequest(updateType);
+ExistingIssuePageController.prototype.handleUnsuccessfulPostRequest = function() {
+    this.retrieveLabelsFromGETRequest();
 }
 
 ExistingIssuePageController.prototype.replaceGitFormData = function(newUTF8Value, newMethodValue, newAuthTokenValue) {
@@ -149,23 +149,23 @@ ExistingIssuePageController.prototype.updateGitFormData = function($parsedRespon
 
     var $newForm = $parsedResponse.find(".discussion-sidebar-item.sidebar-labels.js-discussion-sidebar-item form.js-issue-sidebar-form");
 
-    if(!$newForm){
+    if($newForm.length <= 0){
         return false;
     }
 
     var $newUTF8 = $newForm.find("input[name='utf8']");
-    if($newUTF8){
-        var newUTF8Value = $newUTF8.attr("value");
+    if($newUTF8.length > 0){
+        var newUTF8Value = $newUTF8[0].getAttribute("value");
     }
 
     var $newMethod = $newForm.find("input[name='_method']");
-    if($newMethod){
-        var newMethodValue = $newMethod.attr("value");
+    if($newMethod.length > 0){
+        var newMethodValue = $newMethod[0].getAttribute("value");
     }
 
     var $newAuthToken = $newForm.find("input[name='authenticity_token']");
-    if($newAuthToken){
-        var newAuthTokenValue = $newAuthToken.attr("value");
+    if($newAuthToken.length > 0){
+        var newAuthTokenValue = $newAuthToken[0].getAttribute("value");
     }
     
     return this.replaceGitFormData(newUTF8Value, newMethodValue, newAuthTokenValue);
@@ -188,7 +188,7 @@ ExistingIssuePageController.prototype.replaceGitLabelsDisplay = function(labelSi
 
     this.updateGitFormData($labelSideBarItem);
 
-    if(!$newLabelsDisplay){
+    if($newLabelsDisplay.length <= 0){
         return false;
     }
 
@@ -219,7 +219,7 @@ ExistingIssuePageController.prototype.processReplyForSideBar = function(reply) {
 
     this.updateGitFormData($reply);
 
-    if(!$newLabelsDisplay){
+    if($newLabelsDisplay.length <= 0){
         return false;
     }
 
@@ -254,6 +254,71 @@ ExistingIssuePageController.prototype.updatedGitLabelsDisplay = function(respons
     return true;
 }
 
+ExistingIssuePageController.prototype.onUpdatedGitlabelDisplayResponse = function(reply) {
+
+    if(!reply){
+        return false;
+    }
+
+    var $reply = $(reply);
+    var $newLabelsDisplay = null;
+
+    try{
+        $newLabelsDisplay = $(reply).find(".discussion-sidebar-item.sidebar-labels.js-discussion-sidebar-item .labels.css-truncate"); 
+    } catch(exception) {
+        return false;
+    }
+
+    this.updateGitFormData($reply);
+
+    if($newLabelsDisplay.length <= 0){
+        return false;
+    }
+
+    var oldLabelsDisplay = document.body.querySelector(".discussion-sidebar-item.sidebar-labels.js-discussion-sidebar-item .labels.css-truncate");
+    if(!oldLabelsDisplay){
+        return false;
+    }
+
+    var oldLabels = oldLabelsDisplay.getElementsByClassName("label css-truncate-target");
+    var newLabels = $newLabelsDisplay[0].getElementsByClassName("label css-truncate-target");
+
+    if( oldLabels.length === newLabels.length ) {
+        var isSame = true;
+        for(var i = 0; i < oldLabels.length; ++i){
+            if(oldLabels[i].textContent !== newLabels[i].textContent){
+                isSame = false;
+                break;
+            }
+        }
+        if(isSame){
+            return true;
+        }
+    }
+    $(oldLabelsDisplay).replaceWith($newLabelsDisplay);
+    return true;
+}
+
+ExistingIssuePageController.prototype.refreshGitLabelDisplay = function() {
+
+    var discussionSideBar = document.getElementById("partial-discussion-sidebar");
+
+    if(!discussionSideBar){
+        return false;
+    }
+
+    var url = discussionSideBar.getAttribute("data-url");
+
+    if(!url){
+        return false;
+    }
+
+    $.get(url)
+     .done(this.onUpdatedGitlabelDisplayResponse.bind(this));
+
+    return true;
+}
+
 ExistingIssuePageController.prototype.recoverLabelsInGitDOM = function(data) {
 
     var parent = document.body.querySelector(this.GitLabelListLocation);
@@ -267,12 +332,13 @@ ExistingIssuePageController.prototype.recoverLabelsInGitDOM = function(data) {
     return true;
 }
 
-ExistingIssuePageController.prototype.processGETResponse = function(data, updateType) {
+ExistingIssuePageController.prototype.processGETResponse = function(data) {
+    
     if(this.layoutManager){
         this.recoverLabelsInGitDOM(data);
         this.storage = this.getLabelsFromDOM();
         if(this.storage){
-            this.layoutManager.populateUIWithData(updateType, this.storage);
+            this.layoutManager.populateUIWithData(UpdateUIType.UpdateData, this.storage);
             return true;
         }
     }
@@ -281,7 +347,7 @@ ExistingIssuePageController.prototype.processGETResponse = function(data, update
     return false;
 }
 
-ExistingIssuePageController.prototype.retrieveLabelsFromGETRequest = function(updateType) {
+ExistingIssuePageController.prototype.retrieveLabelsFromGETRequest = function() {
 
     var urlElement = document.querySelector( ".discussion-sidebar .sidebar-labels div.label-select-menu" );
 
@@ -296,7 +362,43 @@ ExistingIssuePageController.prototype.retrieveLabelsFromGETRequest = function(up
     }
 
     $.get(url)
-     .done(function(data){this.processGETResponse(data, updateType)}.bind(this));
+     .done(this.processGETResponse.bind(this));
+
+    return true;
+}
+
+ExistingIssuePageController.prototype.processInitialGETResponse = function(data, updateType) {
+    
+    if(this.layoutManager){
+        this.recoverLabelsInGitDOM(data);
+        this.storage = this.getLabelsFromDOM();
+        if(this.storage){
+            this.layoutManager.populateUIWithData(updateType, this.storage);
+            this.refreshGitLabelDisplay();
+            return true;
+        }
+    }
+    this.cleanUp();
+    this.layoutManager.cleanUp();
+    return false;
+}
+
+ExistingIssuePageController.prototype.retrieveInitialLabelsFromGETRequest = function(updateType) {
+
+    var urlElement = document.querySelector( ".discussion-sidebar .sidebar-labels div.label-select-menu" );
+
+    if(!urlElement){
+        return false;
+    }
+
+    var url = urlElement.getAttribute("data-contents-url");
+
+    if(!url){
+        return false;
+    }
+
+    $.get(url)
+     .done(function(data){this.processInitialGETResponse(data, updateType)}.bind(this));
 
     return true;
 }
@@ -358,9 +460,10 @@ ExistingIssuePageController.prototype.run = function(layoutManager) {
         var updateType = this.layoutManager.initializeUI();
         this.storage = this.getLabelsFromDOM();
         if(!this.storage){
-            this.retrieveLabelsFromGETRequest(updateType);
+            this.retrieveInitialLabelsFromGETRequest(updateType);
         } else {
             this.layoutManager.populateUIWithData(updateType, this.storage);
+            this.refreshGitLabelDisplay();
         }
     }
 }
@@ -444,8 +547,8 @@ ExistingIssuePageController.prototype.updateUI = function(mutation) {
         return false;
     }
 
-    var oldSelectedLabels = oldSelectedLabelList.querySelectorAll(".label.css-truncate-target");
-    var newSelectedLabels = newSelectedLabelList.querySelectorAll(".label.css-truncate-target");
+    var oldSelectedLabels = oldSelectedLabelList.getElementsByClassName("label css-truncate-target");
+    var newSelectedLabels = newSelectedLabelList.getElementsByClassName("label css-truncate-target");
 
     if( oldSelectedLabels.length === newSelectedLabels.length ) {
         var isSame = true;
@@ -459,5 +562,5 @@ ExistingIssuePageController.prototype.updateUI = function(mutation) {
             return true;
         }
     }
-    return this.retrieveLabelsFromGETRequest(UpdateUIType.UpdateData);
+    return this.retrieveLabelsFromGETRequest();
 }
