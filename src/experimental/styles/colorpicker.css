@@ -1,0 +1,13 @@
+.color-editor .dropdown-menu .sp-container {
+    background-color: rgba(255,255,255,0)!important;
+    border-width: 0!important;
+}
+.sp-container .sp-initial.sp-thumb.sp-cf {
+    width: 100%!important;
+}
+.sp-container .sp-initial.sp-thumb.sp-cf .sp-thumb-el {
+    width: 50%!important;
+}
+.sp-container .sp-initial.sp-thumb.sp-cf .sp-thumb-el .sp-thumb-inner {
+    width: 100%!important;
+}
