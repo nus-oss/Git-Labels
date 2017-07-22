@@ -394,7 +394,7 @@ ExistingIssuePageController.prototype.processInitialGETResponse = function(data,
             return true;
         }
     }
-    this.fullCleanUp();
+    this.fullCleanup();
     return false;
 }
 
@@ -414,7 +414,7 @@ ExistingIssuePageController.prototype.retrieveInitialLabelsFromGETRequest = func
 
     $.get(url)
      .done(function(data){this.processInitialGETResponse(data, updateType)}.bind(this))
-     .fail(this.fullCleanUp.bind(this));
+     .fail(this.fullCleanup.bind(this));
 
     return true;
 }
@@ -549,15 +549,15 @@ ExistingIssuePageController.prototype.attachGitSideBarObserver = function() {
     }
 }
 
-ExistingIssuePageController.prototype.fullCleanUp = function() {
+ExistingIssuePageController.prototype.fullCleanup = function() {
     if(this.sideBarObserver){
         this.sideBarObserver.disconnect();
         this.sideBarObserver = null;
     }
-    this.layoutManager.cleanUp();
+    this.layoutManager.cleanup();
 }
 
-ExistingIssuePageController.prototype.cleanUp = function() {
+ExistingIssuePageController.prototype.cleanup = function() {
     if(this.sideBarObserver){
         this.sideBarObserver.disconnect();
         this.sideBarObserver = null;

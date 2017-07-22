@@ -105,7 +105,7 @@ IssuePageController.prototype.subscribeToExternalEvents = function() {
 
 IssuePageController.prototype.cleanup = function() {
     this.issuePageType = IssuePageType.NONE;
-    this.existingPageController.cleanUp();
+    this.existingPageController.cleanup();
     this.layoutManager.cleanup();
     this.stopBodyObserver();
 }

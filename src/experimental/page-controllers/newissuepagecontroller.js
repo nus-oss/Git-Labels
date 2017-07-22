@@ -109,7 +109,7 @@ NewIssuePageController.prototype.handleAfterPostRequest = function() {
     }
 }
 
-NewIssuePageController.prototype.cleanUp = function() {
+NewIssuePageController.prototype.cleanup = function() {
     this.layoutManager.cleanup();
 }
 
@@ -190,12 +190,12 @@ NewIssuePageController.prototype.handleSuccessfulGetLabelsRequest = function(dat
     if(this.storage){
         this.layoutManager.populateUIWithData(updateType, this.storage);
     } else {
-        this.cleanUp();
+        this.cleanup();
     }
 }
 
 NewIssuePageController.prototype.handleFailedGetLabelsRequest = function() {
-    this.cleanUp();
+    this.cleanup();
 }
 
 NewIssuePageController.prototype.getLabelsFromRequest = function(updateType) {
@@ -314,7 +314,7 @@ NewIssuePageController.prototype.run = function(layoutManager) {
         if(this.storage){
             this.layoutManager.populateUIWithData(updateType, this.storage);
         } else {
-            this.cleanUp();
+            this.cleanup();
         }
     }
 }
