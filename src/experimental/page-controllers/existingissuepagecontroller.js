@@ -342,8 +342,6 @@ ExistingIssuePageController.prototype.processGETResponse = function(data) {
             return true;
         }
     }
-    this.cleanUp();
-    this.layoutManager.cleanUp();
     return false;
 }
 
@@ -378,8 +376,7 @@ ExistingIssuePageController.prototype.processInitialGETResponse = function(data,
             return true;
         }
     }
-    this.cleanUp();
-    this.layoutManager.cleanUp();
+    this.fullCleanUp();
     return false;
 }
 
@@ -398,7 +395,8 @@ ExistingIssuePageController.prototype.retrieveInitialLabelsFromGETRequest = func
     }
 
     $.get(url)
-     .done(function(data){this.processInitialGETResponse(data, updateType)}.bind(this));
+     .done(function(data){this.processInitialGETResponse(data, updateType)}.bind(this))
+     .fail(this.fullCleanUp.bind(this));
 
     return true;
 }
@@ -502,6 +500,14 @@ ExistingIssuePageController.prototype.attachGitSideBarObserver = function() {
     }
 }
 
+ExistingIssuePageController.prototype.fullCleanUp = function() {
+    if(this.sideBarObserver){
+        this.sideBarObserver.disconnect();
+        this.sideBarObserver = null;
+    }
+    this.layoutManager.cleanUp();
+}
+
 ExistingIssuePageController.prototype.cleanUp = function() {
     if(this.sideBarObserver){
         this.sideBarObserver.disconnect();
@@ -517,10 +523,10 @@ ExistingIssuePageController.prototype.setupGitDOMListeners = function() {
 ExistingIssuePageController.prototype.getFirstMatchedElementFromNodeList = function(nodeList, classNameQuery) {
     for(var i = 0; i < nodeList.length; ++i){
         var node = nodeList[i];
-        if(node && typeof(node.getElementsByClassName) === "function"){
-            var elements = node.getElementsByClassName(classNameQuery);
-            if(elements.length > 0){
-                return elements[0];
+        if(node.nodeType === Node.ELEMENT_NODE){
+            var element = node.querySelector(classNameQuery);
+            if(element){
+                return element;
             }
         }
     }
@@ -540,8 +546,8 @@ ExistingIssuePageController.prototype.updateUI = function(mutation) {
         return false;
     }
 
-    var oldSelectedLabelList = this.getFirstMatchedElementFromNodeList(removedNodes, "labels css-truncate");
-    var newSelectedLabelList = this.getFirstMatchedElementFromNodeList(addedNodes, "labels css-truncate");
+    var oldSelectedLabelList = this.getFirstMatchedElementFromNodeList(removedNodes, ".labels.css-truncate");
+    var newSelectedLabelList = this.getFirstMatchedElementFromNodeList(addedNodes, ".labels.css-truncate");
 
     if(!oldSelectedLabelList || !newSelectedLabelList){
         return false;
