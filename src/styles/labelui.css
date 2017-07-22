@@ -208,9 +208,22 @@ body, .pusher {
 	vertical-align: middle;
 	margin-right: 0.1em;
 }
-.group-container .caret.up.icon, .collapsed-group-container .caret.down.icon {
+.group-container .chevron.up.icon, .collapsed-group-container .chevron.down.icon {
 	color: white;
 }
-.group-container .caret.up.icon:hover, .collapsed-group-container .caret.down.icon:hover {
+.group-container .chevron.up.icon:hover, .collapsed-group-container .chevron.down.icon:hover {
 	cursor: pointer;
+}
+.group-label .icons {
+	width: auto;
+	margin: 0px 0.75em 0px 0px;
+}
+.group-label .icons .icon:first-child {
+	margin-right: 0px!important;
+}
+.group-label .icons .icon.hidden {
+	display: none!important;
+}
+.group-label .icons .selection.icon {
+	font-size: 0.8em!important;
 }

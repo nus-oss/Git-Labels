@@ -148,7 +148,7 @@ LabelGroup.prototype.createCollapsedContainer = function(isCacheDOM) {
     innerCollapsedContainer.classList.add("inner-collapsed-group-container", "ui", "container");
 
     var collapsedContainerIcon = document.createElement("i")
-    collapsedContainerIcon.classList.add("big", "caret", "down", "icon");
+    collapsedContainerIcon.classList.add("large", "chevron", "down", "icon");
     innerCollapsedContainer.appendChild(collapsedContainerIcon);
 
     var collapsedContainerTextNode = document.createElement("span")
@@ -169,14 +169,19 @@ LabelGroup.prototype.createCollapsedContainer = function(isCacheDOM) {
     return outerCollapsedContainer;
 };
 
-LabelGroup.prototype.styleLabelIconForUnselection = function(labelIcon) {
-    labelIcon.classList.remove("check", "square");
-    labelIcon.classList.add("square");
+LabelGroup.prototype.styleLabelIconForUnselection = function(labelTickIcon) {
+    labelTickIcon.classList.add("hidden");
 }
 
-LabelGroup.prototype.styleLabelIconForSelection = function(labelIcon) {
-    labelIcon.classList.remove("square");
-    labelIcon.classList.add("check", "square");
+LabelGroup.prototype.styleLabelIconForSelection = function(labelTickIcon) {
+    labelTickIcon.classList.remove("hidden");
+}
+
+LabelGroup.prototype.getInvertedColor = function(backgroundColor) {
+    var bgColor = tinycolor(backgroundColor);
+    var bgRGBColor = bgColor.toRgb();
+    var yiq = ((bgRGBColor.r*299)+(bgRGBColor.g*587)+(bgRGBColor.b*114))/1000;
+    return ((yiq >= 200) ? "#000000" : "#ffffff");
 }
 
 LabelGroup.prototype.createLabel = function(labelItem) {
@@ -185,17 +190,25 @@ LabelGroup.prototype.createLabel = function(labelItem) {
     label.classList.add("ui", "large", "label", "custom-label", "group-label");
     label.setAttribute("data-item-id", labelItem.getID());
     
+    var labelColorIconContainer = document.createElement("i");
+    labelColorIconContainer.classList.add("icons", "left-side");
+
+    var labelColor = labelItem.getColor();
+
     var labelColorIcon = document.createElement("i");
-    labelColorIcon.classList.add("icon", "left-side");
+    labelColorIcon.classList.add("square", "icon");
+    labelColorIcon.style.setProperty("color", labelColor);
+    labelColorIconContainer.appendChild(labelColorIcon);
 
-    if(labelItem.isSelected()){
-        this.styleLabelIconForSelection(labelColorIcon);
-    } else {
-        this.styleLabelIconForUnselection(labelColorIcon);
+    var labelTickIcon = document.createElement("i");
+    labelTickIcon.classList.add("checkmark", "icon", "selection");
+    labelTickIcon.style.setProperty("color", this.getInvertedColor(labelColor));
+    if(!labelItem.isSelected()) {
+        this.styleLabelIconForUnselection(labelTickIcon);
     }
-
-    labelColorIcon.style.setProperty("color", labelItem.getColor());
-    label.appendChild(labelColorIcon);
+    labelColorIconContainer.appendChild(labelTickIcon);
+    
+    label.appendChild(labelColorIconContainer);
 
     var labelTextNode = document.createElement("span");
     labelTextNode.classList.add("label-content");
@@ -213,13 +226,13 @@ LabelGroup.prototype.publishUnselectLabelEvent = function(itemID) {
 
 LabelGroup.prototype.unselectLabelWithoutEmittingEvent = function(label) {
     
-    var labelIcon = label.getElementsByClassName("icon");
+    var labelSelectionIcon = label.getElementsByClassName("selection icon");
 
-    if(labelIcon.length <= 0){
+    if(labelSelectionIcon.length <= 0){
         return false;
     }
 
-    this.styleLabelIconForUnselection(labelIcon[0]);
+    this.styleLabelIconForUnselection(labelSelectionIcon[0]);
     return true;
 }
 
@@ -244,13 +257,13 @@ LabelGroup.prototype.publishSelectLabelEvent = function(itemID) {
 
 LabelGroup.prototype.selectLabelWithoutEmittingEvent = function(label) {
     
-    var labelIcon = label.getElementsByClassName("icon");
+    var labelSelectionIcon = label.getElementsByClassName("selection icon");
 
-    if(labelIcon.length <= 0){
+    if(labelSelectionIcon.length <= 0){
         return false;
     }
 
-    this.styleLabelIconForSelection(labelIcon[0]);
+    this.styleLabelIconForSelection(labelSelectionIcon[0]);
     return true;
 }
 
@@ -271,13 +284,13 @@ LabelGroup.prototype.selectLabel = function(label) {
 
 LabelGroup.prototype.isLabelSelected = function(label) {
     
-    var labelIcon = label.getElementsByClassName("icon");
+    var labelIcon = label.getElementsByClassName("selection icon");
 
     if(labelIcon.length <= 0){
         return false;
     }
     
-    return labelIcon[0].classList.contains("check", "square");
+    return !labelIcon[0].classList.contains("hidden");
 }
 
 LabelGroup.prototype.toggleLabelSelection = function(label) {
@@ -353,11 +366,10 @@ LabelGroup.prototype.createExpandedContainer = function(isCacheDOM) {
     innerExpandedContainer.classList.add("inner-group-container" ,"ui", "container");
 
     var innerExpandedContainerIcon = document.createElement("i");
-    innerExpandedContainerIcon.classList.add("big", "caret", "up", "icon");
+    innerExpandedContainerIcon.classList.add("large", "chevron", "up", "icon");
     innerExpandedContainer.appendChild(innerExpandedContainerIcon);
 
     var innerExpandedContainerTextNode = document.createElement("span");
-    //innerExpandedContainerTextNode.classList.add("content");
     innerExpandedContainerTextNode.classList.add("group-text-content");
     innerExpandedContainerTextNode.classList.add(this.getGroupClass());
 
