@@ -339,14 +339,18 @@ LayoutManager.prototype.updateUIWithData = function(storage) {
     return false;
 }
 
+LayoutManager.prototype.updateUIWithDataAsync = async function(storage) {
+    await this.updateUIWithData(storage);
+}
+
 LayoutManager.prototype.populateUIWithData = function(updateUIType, storage) {
     switch(updateUIType){
         case UpdateUIType.UpdateData:
-            return this.updateUIWithData(storage);
+            return this.updateUIWithDataAsync(storage);
         default:
             break;
     }
-    return false;
+    return null;
 }
 
 LayoutManager.prototype.cleanup = function() {
