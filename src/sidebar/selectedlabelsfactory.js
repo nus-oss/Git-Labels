@@ -21,15 +21,9 @@ var SelectedLabelsFactory = function() {
 }
 
 SelectedLabelsFactory.prototype.subscribeToExternalEvents = function() {
-
-    this.groupLabelUnselectItemEventToken = PubSub.subscribe("group-label/unselect-item", 
-                                                               this.handleExternalUnselectLabelEvent.bind(this));
-
-    this.groupLabelSelectItemEventToken = PubSub.subscribe("group-label/select-item", 
-                                                                this.handleExternalSelectLabelEvent.bind(this));
-
-    this.searchLabelSelectItemEventToken = PubSub.subscribe("search/toggle-select-item", 
-                                                                this.handleSearchToggleSelectEvent.bind(this));
+    PubSub.subscribe("group-label/unselect-item", this.handleExternalUnselectLabelEvent.bind(this));
+    PubSub.subscribe("group-label/select-item", this.handleExternalSelectLabelEvent.bind(this));
+    PubSub.subscribe("search/toggle-select-item", this.handleSearchToggleSelectEvent.bind(this));
 }
 
 SelectedLabelsFactory.prototype.addLabel = function(itemID) {
