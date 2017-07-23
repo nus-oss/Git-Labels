@@ -473,31 +473,139 @@ ExistingIssuePageController.prototype.hasPermissionToManageLabels = function() {
     return document.body.querySelector(this.GitLabelModalBoxLocation) != null;
 }
 
-ExistingIssuePageController.prototype.isSafeToRun = function(isSafeParams) {
-    if(isSafeParams){
-        if(!isSafeParams.a && document.getElementById(this.sideBarId)){
-            isSafeParams.a = true;
-        }
-        if(!isSafeParams.b && document.querySelector(this.RetrieveGitLabelUrlLocation)){
-            isSafeParams.b = true;
-        }
-        if(!isSafeParams.c && document.querySelector(this.GitLabelModalBoxLocation)){
-            isSafeParams.c = true;
-        }
-        if(!isSafeParams.d && document.querySelector(this.GitLabelModalBoxButtonLocation)){
-            isSafeParams.d = true;
-        }
-        if(!isSafeParams.e && document.querySelector(this.sideBarLocation)){
-            isSafeParams.e = true;
-        }
-        return isSafeParams.a && isSafeParams.b && isSafeParams.c && isSafeParams.d && isSafeParams.e;
-    } else {
-        return document.getElementById(this.sideBarId) 
-                && document.querySelector(this.RetrieveGitLabelUrlLocation)
-                && document.querySelector(this.GitLabelModalBoxLocation)
-                && document.querySelector(this.GitLabelModalBoxButtonLocation)
-                && document.querySelector(this.sideBarLocation);
+ExistingIssuePageController.prototype.stopBodyObserver = function() {
+    if(this.bodyObserver){
+        this.bodyObserver.disconnect();
+        this.bodyObserver = null;
     }
+}
+
+ExistingIssuePageController.prototype.runWithoutPusher = function() {
+
+    this.bodyObserver = null;
+    var pusher = null;
+
+    pusher = document.createElement("div");
+    pusher.classList.add("pusher");
+    document.body.prepend(pusher);   
+
+    this.bodyObserver = new MutationObserver(processBodyMutations);
+    this.bodyObserver.observe(document.body, {childList:true});
+    document.removeEventListener('DOMContentLoaded', this.stopBodyObserver.bind(this));
+    document.addEventListener('DOMContentLoaded', this.stopBodyObserver.bind(this));
+
+    processBodyMutations();
+    
+    function processBodyMutations() {
+        var children = document.body.children;
+        for(var i = 0, sz = children.length; i < sz;){
+            var child = children[i];
+            if(child.tagName === "SCRIPT" || child === pusher 
+                || child.classList.contains("git-flash-labels-sidebar")
+                || child.classList.contains("git-flash-labels-sidebar-launch-button") ){
+                ++i;
+            } else {
+                pusher.appendChild(child);
+                --sz;
+            }
+        }
+    }
+}
+
+ExistingIssuePageController.prototype.processPage = function() {
+
+    if(!document.body){
+        return false;
+    }
+
+    this.bodyObserver = null;
+    
+    if(!document.body.querySelector(".pusher")){
+        this.runWithoutPusher();
+    }
+
+    return true;
+}
+
+ExistingIssuePageController.prototype.partialRun = function(runParams, layoutManager, isEnd) {
+
+    if(!runParams){
+        if(isEnd) {
+            this.layoutManager = null;
+            this.storage = null;
+        }
+        return false;
+    }
+
+    if(!runParams.a && this.hasPermissionToManageLabels()){
+        this.layoutManager = layoutManager;
+        runParams.a = true;
+    } 
+    
+    if(!runParams.a){
+        if(isEnd) {
+            this.layoutManager = null;
+            this.storage = null;
+        }
+        return false;
+    }
+
+    if(!runParams.b && this.overrideLabelButtonListeners()){
+        runParams.b = true;
+    }
+
+    if(!runParams.page && (isEnd || this.processPage())){
+        runParams.page = true;
+    }
+
+    if(!runParams.c && this.attachGitSideBarObserver()){
+        runParams.c = true;
+    }
+
+    if(typeof(runParams.h) !== "number"){
+        runParams.h = 0;
+    }
+
+    if(!runParams.updateType && runParams.page){
+        runParams.updateType = this.layoutManager.initializeUI();
+        ++runParams.h;
+    }
+
+    if(!runParams.d && (isEnd || document.getElementById(this.sideBarId))){
+        ++runParams.h;
+        runParams.d = true;
+    }
+
+    if(!runParams.e && (isEnd || document.querySelector(this.RetrieveGitLabelUrlLocation))){
+        ++runParams.h;
+        runParams.e = true;
+    }
+
+    if(!runParams.f && (isEnd || document.querySelector(this.GitLabelDeferredListLocation))){
+        ++runParams.h;
+        runParams.f = true;
+    }
+
+    if(runParams.h < 4){
+        if(isEnd) {
+            this.layoutManager = null;
+            this.storage = null;
+        }
+        return false;
+    }
+
+    if(!runParams.g){
+        this.storage = this.getLabelsFromDOM();
+        if(!this.storage){
+            this.retrieveInitialLabelsFromGETRequest(runParams.updateType);
+        } else {
+            this.layoutManager.populateUIWithData(runParams.updateType, this.storage);
+            this.refreshGitLabelDisplay();
+        }
+        runParams.g = true;
+    }
+
+    return runParams.b && runParams.c;
 }
 
 ExistingIssuePageController.prototype.run = function(layoutManager) {
@@ -529,24 +637,30 @@ ExistingIssuePageController.prototype.overrideLabelButtonListeners = function() 
         gitLabelButton.classList.remove(this.GitLabelModalBoxButtonTriggerClass);
         gitLabelButton.removeEventListener("click", this.handleClickEvent.bind(this), true);
         gitLabelButton.addEventListener("click", this.handleClickEvent.bind(this), true);
+        return true;
     }
+
+    return false;
 }
 
 ExistingIssuePageController.prototype.attachGitSideBarObserver = function() {
 
     var gitSideBar = document.body.querySelector(this.sideBarLocation);
 
-    if(gitSideBar){
-
-        this.sideBarObserver = new MutationObserver(function(mutations) {
-            for(var i = 0; i < mutations.length; ++i){
-                this.overrideLabelButtonListeners();
-                this.updateUI(mutations[i]);
-            }  
-        }.bind(this));
-
-        this.sideBarObserver.observe(gitSideBar, { childList: true });
+    if(!gitSideBar){
+        return false;
     }
+
+    this.sideBarObserver = new MutationObserver(function(mutations) {
+        for(var i = 0; i < mutations.length; ++i){
+            this.overrideLabelButtonListeners();
+            this.updateUI(mutations[i]);
+        }  
+    }.bind(this));
+
+    this.sideBarObserver.observe(gitSideBar, { childList: true });
+
+    return true;
 }
 
 ExistingIssuePageController.prototype.fullCleanup = function() {
@@ -555,6 +669,7 @@ ExistingIssuePageController.prototype.fullCleanup = function() {
         this.sideBarObserver = null;
     }
     this.layoutManager.cleanup();
+    this.stopBodyObserver();
 }
 
 ExistingIssuePageController.prototype.cleanup = function() {

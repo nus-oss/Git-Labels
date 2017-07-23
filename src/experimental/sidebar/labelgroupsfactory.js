@@ -96,7 +96,7 @@ LabelGroupsFactory.prototype.createGroups = function(labelGroupsList) {
 LabelGroupsFactory.prototype.create = function(storage, instanceID) {
 
     if(!(storage instanceof ItemStorage) || typeof(instanceID) !== "string"){
-        return null;
+        return document.createElement("div");
     }
 
     var labelGroupsList = this.createLabelGroupsList(storage, instanceID);

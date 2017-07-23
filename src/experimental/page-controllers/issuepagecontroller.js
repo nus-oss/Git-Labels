@@ -12,22 +12,11 @@ var IssuePageController = function() {
     this.subscribeToExternalEvents();
 }
 
-IssuePageController.prototype.stopBodyObserver = function() {
-    if(this.bodyObserver){
-        this.bodyObserver.disconnect();
-        this.bodyObserver = null;
-    }
-}
-
-IssuePageController.prototype.runBasedOnPageType = function(isDelayedRun) {
+IssuePageController.prototype.runBasedOnPageType = function() {
     
     switch(this.issuePageType){
         case IssuePageType.NEW:
-            if(isDelayedRun){
-                this.newPageController.run(this.layoutManager);
-            } else {
-                this.newPageController.runBeforeDocumentEnd(this.layoutManager);
-            }
+            this.newPageController.run(this.layoutManager);
             break;
         case IssuePageType.EXISTING:
             this.existingPageController.run(this.layoutManager);
@@ -35,57 +24,6 @@ IssuePageController.prototype.runBasedOnPageType = function(isDelayedRun) {
         default:
             break;
     }
-
-}
-
-IssuePageController.prototype.runWithoutPusher = function() {
-
-    this.bodyObserver = null;
-    var pusher = null;
-
-    pusher = document.createElement("div");
-    pusher.classList.add("pusher");
-    document.body.prepend(pusher);   
-
-    this.bodyObserver = new MutationObserver(processBodyMutations);
-    this.bodyObserver.observe(document.body, {childList:true});
-    document.removeEventListener('DOMContentLoaded', this.stopBodyObserver.bind(this));
-    document.addEventListener('DOMContentLoaded', this.stopBodyObserver.bind(this));
-
-    processBodyMutations();
-    this.runBasedOnPageType(false);
-    
-    function processBodyMutations() {
-        var children = document.body.children;
-        for(var i = 0, sz = children.length; i < sz;){
-            var child = children[i];
-            if(child.tagName === "SCRIPT" || child === pusher 
-                || child.classList.contains("git-flash-labels-sidebar")
-                || child.classList.contains("git-flash-labels-sidebar-launch-button") ){
-                ++i;
-            } else {
-                pusher.appendChild(child);
-                --sz;
-            }
-        }
-    }
-}
-
-IssuePageController.prototype.run = function() {
-
-    if(!document.body){
-        return false;
-    }
-
-    this.bodyObserver = null;
-    
-    if(document.body.querySelector(".pusher")){
-        this.runBasedOnPageType(false);
-    } else {
-        this.runWithoutPusher();
-    }
-
-    return true;
 }
 
 IssuePageController.prototype.handleExternalApplyLabelsEvents = function() {
@@ -107,31 +45,24 @@ IssuePageController.prototype.cleanup = function() {
     this.issuePageType = IssuePageType.NONE;
     this.existingPageController.cleanup();
     this.layoutManager.cleanup();
-    this.stopBodyObserver();
 }
 
-IssuePageController.prototype.isSafeToRunOnNewLabelsPage = function(isSafeParams) {
-    return this.newPageController.isSafeToRun(isSafeParams);
-}
-
-IssuePageController.prototype.isSafeToRunOnExistingLabelsPage = function(isSafeParams) {
-    return this.existingPageController.isSafeToRun(isSafeParams);
-}
-
-IssuePageController.prototype.runOnNewLabelsPage = function(isRunNow) {
+IssuePageController.prototype.partialRunOnNewLabelsPage = function(runParams, isEnd) {
     this.issuePageType = IssuePageType.NEW;
-    if(isRunNow){
-        this.runBasedOnPageType(true);
-    } else {
-        this.run();
-    }
+    return this.newPageController.partialRun(runParams, this.layoutManager, isEnd);
 }
 
-IssuePageController.prototype.runOnExistingLabelsPage = function(isRunNow) {
+IssuePageController.prototype.partialRunOnExistingLabelsPage = function(runParams, isEnd) {
     this.issuePageType = IssuePageType.EXISTING;
-    if(isRunNow){
-        this.runBasedOnPageType(true);
-    } else {
-        this.run();
-    }
+    return this.existingPageController.partialRun(runParams, this.layoutManager, isEnd);
+}
+
+IssuePageController.prototype.runOnNewLabelsPage = function() {
+    this.issuePageType = IssuePageType.NEW;
+    this.runBasedOnPageType();
+}
+
+IssuePageController.prototype.runOnExistingLabelsPage = function() {
+    this.issuePageType = IssuePageType.EXISTING;
+    this.runBasedOnPageType();
 }

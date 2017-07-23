@@ -111,6 +111,7 @@ NewIssuePageController.prototype.handleAfterPostRequest = function() {
 
 NewIssuePageController.prototype.cleanup = function() {
     this.layoutManager.cleanup();
+    this.stopBodyObserver();
 }
 
 NewIssuePageController.prototype.updateToken = function($parsedResponse) {
@@ -286,23 +287,122 @@ NewIssuePageController.prototype.setupPageListeners = function() {
     this.overrideLabelModalButtonListeners();
 }
 
-NewIssuePageController.prototype.isSafeToRun = function(isSafeParams) {
-    if(isSafeParams){
-        if(!isSafeParams.a && document.querySelector(this.GitLabelModalBoxLocation)){
-            isSafeParams.a = true;
+NewIssuePageController.prototype.stopBodyObserver = function() {
+    if(this.bodyObserver){
+        this.bodyObserver.disconnect();
+        this.bodyObserver = null;
+    }
+}
+
+NewIssuePageController.prototype.runWithoutPusher = function() {
+
+    this.bodyObserver = null;
+    var pusher = null;
+
+    pusher = document.createElement("div");
+    pusher.classList.add("pusher");
+    document.body.prepend(pusher);   
+
+    this.bodyObserver = new MutationObserver(processBodyMutations);
+    this.bodyObserver.observe(document.body, {childList:true});
+    document.removeEventListener('DOMContentLoaded', this.stopBodyObserver.bind(this));
+    document.addEventListener('DOMContentLoaded', this.stopBodyObserver.bind(this));
+
+    processBodyMutations();
+    
+    function processBodyMutations() {
+        var children = document.body.children;
+        for(var i = 0, sz = children.length; i < sz;){
+            var child = children[i];
+            if(child.tagName === "SCRIPT" || child === pusher 
+                || child.classList.contains("git-flash-labels-sidebar")
+                || child.classList.contains("git-flash-labels-sidebar-launch-button") ){
+                ++i;
+            } else {
+                pusher.appendChild(child);
+                --sz;
+            }
         }
-        if(!isSafeParams.b && document.querySelector(this.GitLabelModalBoxButtonLocation)){
-            isSafeParams.b = true;
+    }
+}
+
+NewIssuePageController.prototype.processPage = function() {
+
+    if(!document.body){
+        return false;
+    }
+
+    this.bodyObserver = null;
+    
+    if(!document.body.querySelector(".pusher")){
+        this.runWithoutPusher();
+    }
+
+    return true;
+}
+
+NewIssuePageController.prototype.partialRun = function(runParams, layoutManager, isEnd) {
+
+    if(!runParams){
+        if(isEnd) {
+            this.layoutManager = null;
+            this.storage = null;
         }
-        if(!isSafeParams.c && document.querySelector(this.GitLabelsPostDataQueryString)){
-            isSafeParams.c = true;
+        return false;
+    }
+
+    if(!runParams.a && this.hasPermissionToManageLabels()){
+        this.layoutManager = layoutManager;
+        runParams.a = true;
+    }
+
+    if(!runParams.a){
+        if(isEnd) {
+            this.layoutManager = null;
+            this.storage = null;
         }
-        return isSafeParams.a && isSafeParams.b && isSafeParams.c;
-    } else {
-        return document.getElementById(this.sideBarId)
-            && document.querySelector(this.GitLabelModalBoxButtonLocation)
-            && document.querySelector(this.GitLabelsPostDataQueryString);
-    } 
+        return false;
+    }
+
+    if(!runParams.b && this.overrideLabelModalButtonListeners()){
+        runParams.b = true;
+    }
+
+    if(!runParams.page && (isEnd || this.processPage())){
+        runParams.page = true;
+    }
+
+    if(!runParams.updateType && runParams.page){
+        runParams.updateType = this.layoutManager.initializeUI();
+    }
+
+    if(!runParams.c && (isEnd || document.querySelector(this.GitLabelsPostDataQueryString))){
+        runParams.c = true;
+    }
+
+    if(!runParams.updateType || !runParams.c){
+        if(isEnd) {
+            this.layoutManager = null;
+            this.storage = null;
+        }
+        return false;
+    }
+
+    if(!runParams.d) {
+        if(!isEnd){
+            this.getLabelsFromRequest(runParams.updateType);
+        } else {
+            this.storage = this.getLabelsFromDOM();
+            if(this.storage){
+                this.layoutManager.populateUIWithData(updateType, this.storage);
+            } else {
+                this.cleanup();
+            }
+        }
+        runParams.d = true;
+    }
+
+    return runParams.b;
 }
 
 NewIssuePageController.prototype.run = function(layoutManager) {
@@ -316,14 +416,5 @@ NewIssuePageController.prototype.run = function(layoutManager) {
         } else {
             this.cleanup();
         }
-    }
-}
-
-NewIssuePageController.prototype.runBeforeDocumentEnd = function(layoutManager) {
-    if(layoutManager && this.hasPermissionToManageLabels()){
-        this.layoutManager = layoutManager;
-        this.setupPageListeners();
-        var updateType = this.layoutManager.initializeUI();
-        this.getLabelsFromRequest(updateType);
     }
 }

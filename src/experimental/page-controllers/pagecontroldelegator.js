@@ -23,7 +23,7 @@ var PageControlDelegator = function() {
 PageControlDelegator.prototype.cleanup = function() {
     this.docObserver = null;
     this.runType = null;
-    this.isSafeParams = null;
+    this.runParams = null;
     this.issuePageController.cleanup();
 }
 
@@ -55,30 +55,30 @@ PageControlDelegator.prototype.getRunType = function() {
     return RunType.NONE;
 }
 
-PageControlDelegator.prototype.isSafeToRun = function(runType, isSafeParams) {
+PageControlDelegator.prototype.partialRun = function(runType, runParams, isEnd) {
     switch(runType){
         case RunType.NEW_ISSUE:
         case RunType.NEW_PULL_REQUEST:
-            return this.issuePageController.isSafeToRunOnNewLabelsPage(isSafeParams);
+            return this.issuePageController.partialRunOnNewLabelsPage(runParams, isEnd);
         case RunType.EXISTING_ISSUE:
         case RunType.EXISTING_PULL_REQUEST:
-            return this.issuePageController.isSafeToRunOnExistingLabelsPage(isSafeParams);
+            return this.issuePageController.partialRunOnExistingLabelsPage(runParams, isEnd);
         default:
             break;
     }
     return false;
 }
 
-PageControlDelegator.prototype.runPageController = function(runType, isRunNow) {
+PageControlDelegator.prototype.runPageController = function(runType) {
 
     switch(runType){
         case RunType.NEW_ISSUE:
         case RunType.NEW_PULL_REQUEST:
-            this.issuePageController.runOnNewLabelsPage(isRunNow);
+            this.issuePageController.runOnNewLabelsPage();
             return true;
         case RunType.EXISTING_ISSUE:
         case RunType.EXISTING_PULL_REQUEST:
-            this.issuePageController.runOnExistingLabelsPage(isRunNow);
+            this.issuePageController.runOnExistingLabelsPage();
             return true;
         default:
             break;
@@ -93,12 +93,13 @@ PageControlDelegator.prototype.stopDocObserver = function() {
 
         this.docObserver.disconnect();
         this.docObserver = null;
-        this.isSafeParams = null;
-
+        
         if(this.runType === null){
             this.runType = this.getRunType();
         }
-        this.runPageController(this.runType, true);
+        this.partialRun(this.runType, this.runParams, true);
+
+        this.runParams = null;
         this.runType = null;
     }
 }
@@ -113,7 +114,7 @@ PageControlDelegator.prototype.processBody = function() {
         this.runType = this.getRunType();
     }
 
-    if(!this.isSafeToRun(this.runType, this.isSafeParams)){
+    if(!this.partialRun(this.runType, this.runParams, false)){
         return false;
     }
 
@@ -121,10 +122,7 @@ PageControlDelegator.prototype.processBody = function() {
         this.docObserver.disconnect();
         this.docObserver = null;
     }
-
-    this.runPageController(this.runType, false);
-
-    this.isSafeParams = null;
+    this.runParams = null;
     this.runType = null;
 
     return true;
@@ -134,7 +132,7 @@ PageControlDelegator.prototype.waitForBody = function() {
 
     this.docObserver = null;
     this.runType = null;
-    this.isSafeParams = {};
+    this.runParams = {};
 
     if(!this.processBody()){
         this.docObserver = new MutationObserver(this.processBody.bind(this));
@@ -148,7 +146,7 @@ PageControlDelegator.prototype.runAtEndOfPushState = function() {
     this.cleanup();
     setTimeout(function(){
         var runType = this.getRunType();
-        this.runPageController(runType, true);
+        this.runPageController(runType);
     }.bind(this), 0);
 }
 

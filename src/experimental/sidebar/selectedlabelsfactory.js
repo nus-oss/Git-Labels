@@ -203,45 +203,48 @@ SelectedLabelsFactory.prototype.updateStorage = function(itemID, isSelected) {
 SelectedLabelsFactory.prototype.create = function(storage) {
 
     if(!(storage instanceof ItemStorage)){
-        return null;
+        this.storage = null;
+    } else {
+        this.storage = storage;
     }
-
-    this.storage = storage;
 
     this.selectedContainer = document.createElement("div");
     this.selectedContainer.classList.add("selected-group-container");
 
-    var itemItr = this.storage.getSelectedItemIDsIterator();
-    while(true){
-
-        var itemObj = itemItr.next();
-
-        if(itemObj.done){
-            break;
-        }
-
-        var itemID = itemObj.value;
-        var item = this.storage.getItem(itemID);
+    if(this.storage){
         
-        if(!item){
-            continue;
+        var itemItr = this.storage.getSelectedItemIDsIterator();
+        while(true){
+
+            var itemObj = itemItr.next();
+
+            if(itemObj.done){
+                break;
+            }
+
+            var itemID = itemObj.value;
+            var item = this.storage.getItem(itemID);
+            
+            if(!item){
+                continue;
+            }
+
+            var groupID = item.getGroupID();
+            var groupInfo = this.storage.getGroupDetails(groupID);
+
+            if(!groupInfo){
+                continue;
+            }
+            
+            var label = this.createLabelHTML( groupID, groupInfo, item );
+
+            if(!this.isEligibleForSelection(groupID, groupInfo)){
+                this.styleLabelForUnselection(label);
+                this.updateStorage(itemID, false);
+            }
+
+            this.processLabel(label);
         }
-
-        var groupID = item.getGroupID();
-        var groupInfo = this.storage.getGroupDetails(groupID);
-
-        if(!groupInfo){
-            continue;
-        }
-        
-        var label = this.createLabelHTML( groupID, groupInfo, item );
-
-        if(!this.isEligibleForSelection(groupID, groupInfo)){
-            this.styleLabelForUnselection(label);
-            this.updateStorage(itemID, false);
-        }
-
-        this.processLabel(label);
     }
 
     return this.selectedContainer;
