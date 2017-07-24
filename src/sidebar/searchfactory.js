@@ -164,7 +164,10 @@ SearchFactory.prototype.updateSearchData = function(storage) {
 SearchFactory.prototype.create = function(storage) {
 
     if(!this.updateSearchData(storage)){
-        return null;
+        this.storage = null;
+        this.nameToIDMap = null;
+        this.nameArrayList = null;
+        this.nameArrayListIDs = null;
     }
 
     var searchBar = this.createSearchBar("Search For Labels", true);
@@ -621,7 +624,7 @@ SearchFactory.prototype.createFormattedMatchedString = function( str, firstIndex
 
 SearchFactory.prototype.createMatchedList = function(pattern) {
 
-    if(!this.storage){
+    if(!this.storage || !this.nameArrayList || !this.nameArrayListIDs){
         return null;
     }
 

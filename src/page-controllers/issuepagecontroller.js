@@ -1,55 +1,68 @@
 var IssuePageType = {
     NEW: 0,
     EXISTING: 1,
-    NEW_PULL_REQUEST: 2
+    NONE: 4
 }
 
 var IssuePageController = function() {
-    this.issuePageType = IssuePageType.NEW;
+    this.issuePageType = IssuePageType.NONE;
     this.layoutManager = new LayoutManager();
     this.existingPageController = new ExistingIssuePageController();
     this.newPageController = new NewIssuePageController();
-    this.newRequestPageController = new NewPullRequestPageController();
     this.subscribeToExternalEvents();
-    // this.applySelectedLabelsEventToken
+}
+
+IssuePageController.prototype.runBasedOnPageType = function() {
+    
+    switch(this.issuePageType){
+        case IssuePageType.NEW:
+            this.newPageController.run(this.layoutManager);
+            break;
+        case IssuePageType.EXISTING:
+            this.existingPageController.run(this.layoutManager);
+            break;
+        default:
+            break;
+    }
 }
 
 IssuePageController.prototype.handleExternalApplyLabelsEvents = function() {
-    switch(this.issuePageType){
+    switch(this.issuePageType) {
         case IssuePageType.NEW:
             return this.newPageController.handleExternalApplyLabelsEvent();
         case IssuePageType.EXISTING:
             return this.existingPageController.handleExternalApplyLabelsEvent();
-        case IssuePageType.NEW_PULL_REQUEST:
-            return this.newRequestPageController.handleExternalApplyLabelsEvent();
         default:
             break;
     }
 }
 
 IssuePageController.prototype.subscribeToExternalEvents = function() {
-
-    //$.subscribe("search-bar/apply-selected-labels", this.handleExternalApplyLabelsEvent.bind(this));
-    this.applySelectedLabelsEventToken = PubSub.subscribe("search-bar/apply-selected-labels",               
-                                                            this.handleExternalApplyLabelsEvents.bind(this));
+    PubSub.subscribe("search-bar/apply-selected-labels", this.handleExternalApplyLabelsEvents.bind(this));
 }
 
 IssuePageController.prototype.cleanup = function() {
+    this.issuePageType = IssuePageType.NONE;
     this.existingPageController.cleanup();
     this.layoutManager.cleanup();
 }
 
+IssuePageController.prototype.partialRunOnNewLabelsPage = function(runParams, isEnd) {
+    this.issuePageType = IssuePageType.NEW;
+    return this.newPageController.partialRun(runParams, this.layoutManager, isEnd);
+}
+
+IssuePageController.prototype.partialRunOnExistingLabelsPage = function(runParams, isEnd) {
+    this.issuePageType = IssuePageType.EXISTING;
+    return this.existingPageController.partialRun(runParams, this.layoutManager, isEnd);
+}
+
 IssuePageController.prototype.runOnNewLabelsPage = function() {
     this.issuePageType = IssuePageType.NEW;
-    this.newPageController.run(this.layoutManager);
+    this.runBasedOnPageType();
 }
 
 IssuePageController.prototype.runOnExistingLabelsPage = function() {
     this.issuePageType = IssuePageType.EXISTING;
-    this.existingPageController.run(this.layoutManager);
-}
-
-IssuePageController.prototype.runOnNewPullRequestPage = function() {
-    this.issuePageType = IssuePageType.NEW_PULL_REQUEST;
-    this.newRequestPageController.run(this.layoutManager)
+    this.runBasedOnPageType();
 }

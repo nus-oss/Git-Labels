@@ -3,7 +3,7 @@
 
   "name": "Git Labels",
   "description": "Manage grouped Github labels",
-  "version": "1.0",
+  "version": "1.0.2",
 
   "icons": { "16": "resources/git-labels-icon-16px.png",
              "48": "resources/git-labels-icon-48px.png",
@@ -14,14 +14,8 @@
     "default_popup": "src/popup/popup.html"
   },
 
-  "permissions": ["tabs",
-                  "https://github.com/*", 
-                  "http://github.com/*"],
-
-  "background": {
-    "scripts": [ "src/background-scripts/backgroundscript.js" ],
-    "persistent": false
-  },
+  "permissions": [ "https://github.com/*", 
+                   "http://github.com/*" ],
 
   "content_scripts": [
    {
@@ -33,10 +27,7 @@
               "src/styles/colorpicker.css",
               "src/styles/labelui.css" ],
 
-      "js": [ // Global override scripts
-              "src/globals/override.js",
-
-              // Libaries used
+      "js": [ // Libaries used
               "libs/jquery/jquery-3.2.1.min.js",
               "libs/semantic/semantic.min.js",
               "libs/colorpicker/spectrum.min.js",
@@ -50,7 +41,7 @@
               "src/uuid-generator/v5.js",
               "src/uuid-generator/idgenerator.js",
               "src/uuid-generator/instanceidgenerator.js",
-              
+
               // Essential Structures 
               "src/label-structures/labelitem.js",
               "src/label-structures/groupinfo.js",
@@ -66,7 +57,6 @@
               // Page Controllers
               "src/page-controllers/existingissuepagecontroller.js",
               "src/page-controllers/newissuepagecontroller.js",
-              "src/page-controllers/newpullrequestpagecontroller.js",
               "src/page-controllers/issuepagecontroller.js",
               "src/page-controllers/labelpagecontroller.js",
 

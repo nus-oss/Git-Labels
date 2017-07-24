@@ -1,7 +1,17 @@
+var RunType = {
+    NEW_ISSUE: 0,
+    EXISTING_ISSUE: 1,
+    NEW_LABELS: 2,
+    NEW_PULL_REQUEST: 3,
+    EXISTING_PULL_REQUEST: 4,
+    NONE: 5
+}
+
 var PageControlDelegator = function() {
 
     this.issuePageController = new IssuePageController();
     this.labelPageController = new LabelPageController();
+    this.hasRun = false;
 
     this.AnalyticsContentForNewIssue = "/<user-name>/<repo-name>/issues/new";
     this.AnalyticsContentForExistingIssue = "/<user-name>/<repo-name>/issues/show";
@@ -11,10 +21,13 @@ var PageControlDelegator = function() {
 }
 
 PageControlDelegator.prototype.cleanup = function() {
+    this.docObserver = null;
+    this.runType = null;
+    this.runParams = null;
     this.issuePageController.cleanup();
 }
 
-PageControlDelegator.prototype.runPageController = function() {
+PageControlDelegator.prototype.getRunType = function() {
 
     var location = document.head.querySelector("meta[name='analytics-location']");
     if(!location) {
@@ -28,13 +41,43 @@ PageControlDelegator.prototype.runPageController = function() {
 
     switch(locationContent){
         case this.AnalyticsContentForNewIssue:
+            return RunType.NEW_ISSUE;
+        case this.AnalyticsContentForNewPullRequest:
+            return RunType.NEW_PULL_REQUEST;
+        case this.AnalyticsContentForExistingIssue:
+            return RunType.EXISTING_ISSUE;
+        case this.AnalyticsContentForExistingPullRequest:
+            return RunType.EXISTING_PULL_REQUEST;
+        default:
+            break;
+    }
+    
+    return RunType.NONE;
+}
+
+PageControlDelegator.prototype.partialRun = function(runType, runParams, isEnd) {
+    switch(runType){
+        case RunType.NEW_ISSUE:
+        case RunType.NEW_PULL_REQUEST:
+            return this.issuePageController.partialRunOnNewLabelsPage(runParams, isEnd);
+        case RunType.EXISTING_ISSUE:
+        case RunType.EXISTING_PULL_REQUEST:
+            return this.issuePageController.partialRunOnExistingLabelsPage(runParams, isEnd);
+        default:
+            break;
+    }
+    return false;
+}
+
+PageControlDelegator.prototype.runPageController = function(runType) {
+
+    switch(runType){
+        case RunType.NEW_ISSUE:
+        case RunType.NEW_PULL_REQUEST:
             this.issuePageController.runOnNewLabelsPage();
             return true;
-        case this.AnalyticsContentForNewPullRequest:
-            this.issuePageController.runOnNewPullRequestPage();
-            return true;
-        case this.AnalyticsContentForExistingIssue:
-        case this.AnalyticsContentForExistingPullRequest:
+        case RunType.EXISTING_ISSUE:
+        case RunType.EXISTING_PULL_REQUEST:
             this.issuePageController.runOnExistingLabelsPage();
             return true;
         default:
@@ -44,31 +87,78 @@ PageControlDelegator.prototype.runPageController = function() {
     return false;
 }
 
-PageControlDelegator.prototype.run = function() {
-    this.cleanup();
-    this.runPageController();
-}
+PageControlDelegator.prototype.stopDocObserver = function() {
+    
+    if(this.docObserver){
 
-PageControlDelegator.prototype.attachUrlListener = function() {
-    chrome.runtime.onMessage.addListener( function(request, sender, sendResponse) {
-        $(document).ready(this.run.bind(this));
-    }.bind(this));
-}
-
-// Singleton factory for page delegator
-var PageControlDelegatorSingleton = (function(){
-    var instance;
-    return {
-        attachUrlListener: function() {
-            if(!instance){
-                instance = new PageControlDelegator();
-                instance.attachUrlListener();
-                return true;
-            }
-            return false;
+        this.docObserver.disconnect();
+        this.docObserver = null;
+        
+        if(this.runType === null){
+            this.runType = this.getRunType();
         }
-    };
-})();
+        this.partialRun(this.runType, this.runParams, true);
 
-// main
-PageControlDelegatorSingleton.attachUrlListener();
+        this.runParams = null;
+        this.runType = null;
+    }
+}
+
+PageControlDelegator.prototype.processBody = function() {
+
+    if(!document.body){
+        return false;
+    }
+
+    if(this.runType === null){
+        this.runType = this.getRunType();
+    }
+
+    if(!this.partialRun(this.runType, this.runParams, false)){
+        return false;
+    }
+
+    if(this.docObserver){
+        this.docObserver.disconnect();
+        this.docObserver = null;
+    }
+    this.runParams = null;
+    this.runType = null;
+
+    return true;
+}
+
+PageControlDelegator.prototype.waitForBody = function() {
+
+    this.docObserver = null;
+    this.runType = null;
+    this.runParams = {};
+
+    if(!this.processBody()){
+        this.docObserver = new MutationObserver(this.processBody.bind(this));
+        this.docObserver.observe(document, {subtree:true, childList:true});
+        document.removeEventListener('DOMContentLoaded', this.stopDocObserver.bind(this));
+        document.addEventListener('DOMContentLoaded', this.stopDocObserver.bind(this));
+    }
+}
+
+PageControlDelegator.prototype.runAtEndOfPushState = function() {
+    this.cleanup();
+    setTimeout(function(){
+        var runType = this.getRunType();
+        this.runPageController(runType);
+    }.bind(this), 0);
+}
+
+PageControlDelegator.prototype.run = function() {
+    if(!this.hasRun){
+        this.hasRun = true;
+        document.addEventListener("pjax:end", this.runAtEndOfPushState.bind(this));
+        this.cleanup();
+        this.waitForBody();
+    }
+}
+
+// Main
+var pageControllerDelegatorInstance = new PageControlDelegator();
+pageControllerDelegatorInstance.run();
