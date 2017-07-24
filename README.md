@@ -34,9 +34,15 @@ The full git repository is at: <https://github.com/GitHubExtensions/Git-Labels> 
 
 2. Click on the **+ ADD TO CHROME** button as shown below:
 
+![](readme-resources/images/web-store-add-to-chrome.PNG)
+
 3. Click on the **Add extension** button as shown below to add the extension to the chrome browser
 
+![](readme-resources/images/webstore-permission-check.PNG)
+
 4. If the extension is successfully installed, you will see a pop-up box appearing at the top right hand side of the browser informing you that the installation was successful as shown below:
+
+![](readme-resources/images/webstore-successful-install.png)
 
 ***
 
