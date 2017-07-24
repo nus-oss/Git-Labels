@@ -28,7 +28,19 @@ The full git repository is at: <https://github.com/GitHubExtensions/Git-Labels> 
 
 ### Installation
 
-#### [**Option 1: Using packed google chrome extension**](#option-1-using-packed-google-chrome-extension)
+#### [**Option 1: From the chrome webstore**](#)
+
+1. Navigate to <https://chrome.google.com/webstore/detail/git-labels/ipfflmlpojlbhcfapenihefpifipecal>
+
+2. Click on the **+ ADD TO CHROME** button as shown below:
+
+3. Click on the **Add extension** button as shown below to add the extension to the chrome browser
+
+4. If the extension is successfully installed, you will see a pop-up box appearing at the top right hand side of the browser informing you that the installation was successful as shown below:
+
+***
+
+#### [**Option 2: Using packed google chrome extension**](#option-1-using-packed-google-chrome-extension)
 
 1. **Download Git Labels**
 
@@ -66,7 +78,7 @@ The full git repository is at: <https://github.com/GitHubExtensions/Git-Labels> 
 
 ***
 
-#### [**Option 2: From source**](#option-2-from-source)
+#### [**Option 3: From source**](#option-2-from-source)
 
 1. **Download Git Labels**
 
