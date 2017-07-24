@@ -28,7 +28,7 @@ The full git repository is at: <https://github.com/GitHubExtensions/Git-Labels> 
 
 ### Installation
 
-#### [**Option 1: From the chrome webstore**](#)
+#### [**Option 1: From the chrome webstore**](#option-1-from-the-chrome-webstore)
 
 1. Navigate to <https://chrome.google.com/webstore/detail/git-labels/ipfflmlpojlbhcfapenihefpifipecal>
 
