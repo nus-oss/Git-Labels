@@ -7,6 +7,7 @@ var NewIssuePageController = function() {
     this.GitLabelFormName = "issue[labels][]";
     this.GitLabelListLocation = ".sidebar-labels .select-menu-modal-holder .select-menu-list";
     this.GitLabelListItemClassName = "select-menu-item";
+    this.GitLabelListItemText = "select-menu-item-text";
     this.GitLabelListItemExactLocation = ".select-menu-item";
     /*
         this.storage,
@@ -228,33 +229,31 @@ NewIssuePageController.prototype.getLabelsFromDOM = function() {
     if(!list){
         return null;
     }
-    
-    var labels = list.getElementsByClassName(this.GitLabelListItemClassName);
 
+    var labels = list.getElementsByClassName(this.GitLabelListItemClassName);
     var storage = new ItemStorage();
     for( var i = 0; i < labels.length; ++i ) {
 
-        let label = labels[i];
+            let label = labels[i];
 
-        let nameNode = label.querySelector(".color-label");
-        if(!nameNode){
-            continue;
-        }
+            let nameNode = label.getElementsByClassName(this.GitLabelListItemText)[0].getElementsByTagName("input")[0];
+            if(!nameNode) {
+                continue;
+            }
 
-        let itemName = nameNode.getAttribute("data-name");;
-        if(!itemName){
-            continue;
-        }
+            let itemName = nameNode.getAttribute("data-label-name");
 
-        let colorNode = label.querySelector(".color");
-        if(!colorNode){
-            continue;
-        }
+            let colorNode = label.getElementsByClassName("float-left")[0];
+            if(!colorNode){
+                console.log("invalid colorNode");
+                continue;
+            }
 
-        let itemColor = colorNode.style.backgroundColor;
-        if(!itemColor){
-            continue;
-        }
+
+            let itemColor = colorNode.style.backgroundColor;
+            if(!itemColor){
+                continue;
+            }
 
         var isItemSelected = label.classList.contains("selected");
         storage.addItem(new LabelItem(itemName, itemColor, isItemSelected));
@@ -301,7 +300,7 @@ NewIssuePageController.prototype.runWithoutPusher = function() {
 
     pusher = document.createElement("div");
     pusher.classList.add("pusher");
-    document.body.prepend(pusher);   
+    document.body.prepend(pusher);
 
     this.bodyObserver = new MutationObserver(processBodyMutations);
     this.bodyObserver.observe(document.body, {childList:true});
@@ -309,12 +308,12 @@ NewIssuePageController.prototype.runWithoutPusher = function() {
     document.addEventListener('DOMContentLoaded', this.stopBodyObserver.bind(this));
 
     processBodyMutations();
-    
+
     function processBodyMutations() {
         var children = document.body.children;
         for(var i = 0, sz = children.length; i < sz;){
             var child = children[i];
-            if(child.tagName === "SCRIPT" || child === pusher 
+            if(child.tagName === "SCRIPT" || child === pusher
                 || child.classList.contains("git-flash-labels-sidebar")
                 || child.classList.contains("git-flash-labels-sidebar-launch-button") ){
                 ++i;
@@ -333,7 +332,7 @@ NewIssuePageController.prototype.processPage = function() {
     }
 
     this.bodyObserver = null;
-    
+
     if(!document.body.querySelector(".pusher")){
         this.runWithoutPusher();
     }
