@@ -245,7 +245,6 @@ NewIssuePageController.prototype.getLabelsFromDOM = function() {
 
             let colorNode = label.getElementsByClassName("float-left")[0];
             if(!colorNode){
-                console.log("invalid colorNode");
                 continue;
             }
 
