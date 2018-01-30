@@ -20,6 +20,7 @@ var ExistingIssuePageController = function(layoutManager) {
     this.sideBarId = "partial-discussion-sidebar";
     this.GitLabelNameLocation = ".select-menu-item-text .color-label";
     this.GitLabelColorLocation = ".select-menu-item-text .color";
+    this.GitLabelListItemText = "select-menu-item-text";
     this.GitLabelSelectionStatusLocation = ".select-menu-item-text input";
     /*
         this.storage,
@@ -115,7 +116,7 @@ ExistingIssuePageController.prototype.handleExternalApplyLabelsEvent = function(
 
         data += ("&" + encodeURIComponent(this.GitLabelFormName) + "=" + encodeURIComponent((item.getFullName())));
     }
-
+    
     $.post(postInfo.url, data)
      .done(this.handleSuccessfulPostRequest.bind(this))
      .fail(this.handleUnsuccessfulPostRequest.bind(this));
@@ -186,7 +187,7 @@ ExistingIssuePageController.prototype.updateGitFormData = function($parsedRespon
     if($newAuthToken.length > 0){
         var newAuthTokenValue = $newAuthToken[0].getAttribute("value");
     }
-    
+
     return this.replaceGitFormData(newUTF8Value, newMethodValue, newAuthTokenValue);
 }
 
@@ -233,7 +234,7 @@ ExistingIssuePageController.prototype.processReplyForSideBar = function(reply) {
 
         this.updateGitFormData($reply);
 
-        var $newLabelsDisplay = $reply.find(this.GitSelectedLabelsLocation); 
+        var $newLabelsDisplay = $reply.find(this.GitSelectedLabelsLocation);
         if($newLabelsDisplay.length <= 0){
             return false;
         }
@@ -284,7 +285,7 @@ ExistingIssuePageController.prototype.onUpdatedGitlabelDisplayResponse = functio
 
         this.updateGitFormData($reply);
 
-        var $newLabelsDisplay = $reply.find(this.GitSelectedLabelsLocation); 
+        var $newLabelsDisplay = $reply.find(this.GitSelectedLabelsLocation);
         if($newLabelsDisplay.length <= 0){
             return false;
         }
@@ -351,7 +352,7 @@ ExistingIssuePageController.prototype.recoverLabelsInGitDOM = function(data) {
 }
 
 ExistingIssuePageController.prototype.processGETResponse = function(data) {
-    
+
     if(this.layoutManager){
         this.recoverLabelsInGitDOM(data);
         this.storage = this.getLabelsFromDOM();
@@ -384,7 +385,7 @@ ExistingIssuePageController.prototype.retrieveLabelsFromGETRequest = function() 
 }
 
 ExistingIssuePageController.prototype.processInitialGETResponse = function(data, updateType) {
-    
+
     if(this.layoutManager){
         this.recoverLabelsInGitDOM(data);
         this.storage = this.getLabelsFromDOM();
@@ -437,22 +438,22 @@ ExistingIssuePageController.prototype.getLabelsFromDOM = function() {
 
         var item = items[i];
 
-        var nameNode = item.querySelector(this.GitLabelNameLocation);
-        if(!nameNode){
+        let nameNode = item.getElementsByClassName(this.GitLabelListItemText)[0].getElementsByTagName("input")[0];
+        if(!nameNode) {
             continue;
         }
 
-        var name = nameNode.getAttribute("data-name");
+        let name = nameNode.getAttribute("data-label-name");
         if(!name){
             continue;
         }
 
-        var colorNode = item.querySelector(this.GitLabelColorLocation);
+        let colorNode = item.getElementsByClassName("float-left")[0];
         if(!colorNode){
             continue;
         }
-        
-        var color = colorNode.style.backgroundColor;
+
+        let color = colorNode.style.backgroundColor;
         if(!color){
             continue;
         }
@@ -487,7 +488,7 @@ ExistingIssuePageController.prototype.runWithoutPusher = function() {
 
     pusher = document.createElement("div");
     pusher.classList.add("pusher");
-    document.body.prepend(pusher);   
+    document.body.prepend(pusher);
 
     this.bodyObserver = new MutationObserver(processBodyMutations);
     this.bodyObserver.observe(document.body, {childList:true});
@@ -495,12 +496,12 @@ ExistingIssuePageController.prototype.runWithoutPusher = function() {
     document.addEventListener('DOMContentLoaded', this.stopBodyObserver.bind(this));
 
     processBodyMutations();
-    
+
     function processBodyMutations() {
         var children = document.body.children;
         for(var i = 0, sz = children.length; i < sz;){
             var child = children[i];
-            if(child.tagName === "SCRIPT" || child === pusher 
+            if(child.tagName === "SCRIPT" || child === pusher
                 || child.classList.contains("git-flash-labels-sidebar")
                 || child.classList.contains("git-flash-labels-sidebar-launch-button") ){
                 ++i;
@@ -519,7 +520,7 @@ ExistingIssuePageController.prototype.processPage = function() {
     }
 
     this.bodyObserver = null;
-    
+
     if(!document.body.querySelector(".pusher")){
         this.runWithoutPusher();
     }
@@ -540,8 +541,8 @@ ExistingIssuePageController.prototype.partialRun = function(runParams, layoutMan
     if(!runParams.a && this.hasPermissionToManageLabels()){
         this.layoutManager = layoutManager;
         runParams.a = true;
-    } 
-    
+    }
+
     if(!runParams.a){
         if(isEnd) {
             this.layoutManager = null;
@@ -655,7 +656,7 @@ ExistingIssuePageController.prototype.attachGitSideBarObserver = function() {
         for(var i = 0; i < mutations.length; ++i){
             this.overrideLabelButtonListeners();
             this.updateUI(mutations[i]);
-        }  
+        }
     }.bind(this));
 
     this.sideBarObserver.observe(gitSideBar, { childList: true });
